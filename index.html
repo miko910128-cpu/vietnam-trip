@@ -1054,12 +1054,12 @@ tr:last-child td{border-bottom:0}
       <input id="mapsUrl" class="grow" type="url" placeholder="https://maps.app.goo.gl/…">
       <button class="btn" type="submit">儲存</button>
     </form>
-    <h3 class="lbl" style="margin:0">手動設定匯率</h3>
+    <h3 class="lbl" style="margin:0">匯率（連不上網時才用）</h3>
     <form class="row" id="rateForm">
       <span>1 TWD =</span><input id="rateInput" type="number" min="1" step="0.01" style="width:120px"><span>VND</span>
       <button class="btn" type="submit">儲存</button>
     </form>
-    <div class="hint">換錢時更新一下就好。</div>
+    <div class="hint">平常會自動抓市場匯率，這裡只在抓不到時使用。</div>
   </section>
 
   <nav class="tabs" role="tablist">
@@ -1536,12 +1536,25 @@ function renderFx(){
   }
   const at=S.fx.updatedAt?new Date(S.fx.updatedAt):null;
   $("fxMeta").innerHTML=`<span>1 TWD = <b class="num">${S.fx.rate?r.toFixed(2):"—"}</b> VND</span><span>1 萬越南盾 ≈ NT$${(10000/r).toFixed(1)}</span>`+
-    (at?`<span>更新於 ${at.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}${S.fx.source?" · "+esc(S.fx.source):""}</span>`:"");
+    (at?`<span>${S.fx.live?"即時市場匯率 · ":""}更新於 ${at.toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})}</span>`:"");
   $("quick").innerHTML=QUICK.map(v=>`<button type="button" data-q="${v}"><span class="v">${fmtVND(v)}</span><span class="t">≈ ${fmtTWD(v/r)}</span></button>`).join("");
 }
 $("fxV").addEventListener("input",e=>{fxLast="V";$("fxT").value=(parseNum(e.target.value)/rate()).toLocaleString("en-US",{maximumFractionDigits:0})});
 $("fxT").addEventListener("input",e=>{fxLast="T";$("fxV").value=Math.round(parseNum(e.target.value)*rate()).toLocaleString("en-US")});
 $("fxV").addEventListener("blur",e=>{const n=parseNum(e.target.value);e.target.value=n?n.toLocaleString("en-US"):""});
+
+/* ---------- live exchange rate ---------- */
+let liveFx=null;
+async function refreshFx(){
+  const tries=[
+    async()=>{const j=await (await fetch("https://open.er-api.com/v6/latest/TWD")).json();
+      if(j.result!=="success"||!j.rates||!j.rates.VND)throw 0;return{rate:j.rates.VND,updatedAt:new Date(j.time_last_update_unix*1000).toISOString(),source:"ExchangeRate-API"}},
+    async()=>{const j=await (await fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/twd.json")).json();
+      if(!j.twd||!j.twd.vnd)throw 0;return{rate:j.twd.vnd,updatedAt:new Date(j.date+"T00:00:00Z").toISOString(),source:"Currency API"}}];
+  for(const t of tries){try{const r=await t();if(r.rate>300&&r.rate<2000){liveFx=r;S.fx={...r,live:true};renderAll();
+      if(db)db.doc("trip/fx").set({rate:+r.rate.toFixed(2),updatedAt:r.updatedAt,source:r.source}).catch(()=>{});return}}catch(_){}}
+}
+setInterval(()=>{if(document.visibilityState==="visible")refreshFx()},30*60*1000);
 
 /* ---------- money ---------- */
 let eCur="VND",moneyMode="group";
@@ -1704,7 +1717,7 @@ document.addEventListener("submit",async e=>{
     const ok=await write(()=>db.doc("trip/meta").update({members:[...S.meta.members,n]}),`歡迎 ${n}`);if(ok)$("memberName").value="";return}
   if(f.id==="welcomeForm"){await welcomeSubmit();return}
   if(f.id==="mapsForm"){const u=safeUrl($("mapsUrl").value.trim());await write(()=>db.doc("trip/meta").update({mapsList:u}),"已儲存清單連結");return}
-  if(f.id==="rateForm"){const r=Number($("rateInput").value);if(!(r>0))return;await write(()=>db.doc("trip/fx").set({rate:r,updatedAt:new Date().toISOString(),source:"手動設定"}),"匯率已更新");return}
+  if(f.id==="rateForm"){const r=Number($("rateInput").value);if(!(r>0))return;liveFx=null;await write(()=>db.doc("trip/fx").set({rate:r,updatedAt:new Date().toISOString(),source:"手動設定"}),"匯率已更新");return}
 });
 
 /* ---------- boot ---------- */
@@ -1718,7 +1731,8 @@ renderAll();
   authChecked=true;subMine();
   db.doc("trip/meta").onSnapshot(s=>{const x=s.exists?s.data():{};S.meta={members:Array.isArray(x.members)?x.members:[],mapsList:x.mapsList||""};S.loaded.meta=true;renderAll()},err);
   db.doc("trip/info").onSnapshot(s=>{S.info=s.exists?s.data():null;renderAll()},err);
-  db.doc("trip/fx").onSnapshot(s=>{S.fx=s.exists?{...s.data(),rate:Number(s.data().rate)||0}:{rate:0};renderAll()},err);
+  db.doc("trip/fx").onSnapshot(s=>{if(liveFx)return;S.fx=s.exists?{...s.data(),rate:Number(s.data().rate)||0}:{rate:0};renderAll()},err);
+  refreshFx();
   db.collection("people").onSnapshot(s=>{S.people=Object.fromEntries(s.docs.map(x=>[x.id,x.data()]));S.loaded.people=true;renderAll()},err);
   const sub=(col)=>db.collection(col).onSnapshot(s=>{S[col]=s.docs.map(x=>({...x.data(),_id:x.id}));S.loaded[col]=true;renderAll()},err);
   ["items","wishes","expenses","packing"].forEach(sub);
