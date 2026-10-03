@@ -1442,7 +1442,7 @@ function initMap(){
   if(_map||!window.L)return;
   _map=L.map("map",{zoomControl:true,attributionControl:true,minZoom:10,maxZoom:19,zoomSnap:.5}).setView([10.776,106.697],14);
   _map.attributionControl.setPrefix(false);
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",{subdomains:"abcd",maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(_map);
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(_map);
   _layer=L.layerGroup().addTo(_map);
   _map.on("popupopen",e=>{const b=e.popup.getElement().querySelector("[data-focus-wish]");if(b)b.addEventListener("click",()=>focusWish(b.dataset.focusWish))});
   _map.on("click",e=>{if(!placingId)return;const id=placingId;stopPlacing();
