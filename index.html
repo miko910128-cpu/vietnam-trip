@@ -1090,7 +1090,7 @@ tr:last-child td{border-bottom:0}
       <details class="adder panel">
         <summary>＋ 丟一個想去的地方</summary>
         <form class="row" id="wishForm">
-          <div class="ask-row"><input id="wName" placeholder="貼上店名或景點" maxlength="80" required aria-label="店名"><button class="btn ask" type="button" id="askFill">Claude 幫我填</button></div>
+          <div class="ask-row"><input id="wName" placeholder="貼上店名或景點" maxlength="80" required aria-label="店名"><button class="btn ask" type="button" id="askFill">自動找位置</button></div>
           <div class="ask-status hint" id="askStatus" hidden></div>
           <select id="wKind" aria-label="分類"><option>吃</option><option>咖啡</option><option>景點</option><option>購物</option><option>其他</option></select>
           <input id="wArea" placeholder="區域（例：第1郡 Bến Thành）" maxlength="60" style="flex:1 1 150px" aria-label="區域">
@@ -1428,7 +1428,7 @@ function renderWish(){
           <div class="row2"><input id="ew-a-${id}" value="${esc(w.area||"")}" placeholder="區域（例：第一郡）" maxlength="30" aria-label="區域">
           <input id="ew-l-${id}" type="url" value="${esc(w.link||"")}" placeholder="IG 或網頁連結" aria-label="連結"></div>
           <textarea id="ew-n-${id}" placeholder="詳細內容：必點、營業時間、要不要訂位…" maxlength="1000" aria-label="詳細內容">${esc(w.note||"")}</textarea>
-          <div class="btns"><button class="btn" type="submit">儲存</button><button class="btn ghost ask-edit" type="button" data-ask-edit="${id}" ${sampleFn?"":"hidden"}>Claude 補資料</button><button class="btn ghost" type="button" data-place="${id}">${w.lat?"重新標位置":"標在地圖上"}</button><button class="btn ghost" type="button" data-edit-wish="">取消</button></div>
+          <div class="btns"><button class="btn" type="submit">儲存</button><button class="btn ghost ask-edit" type="button" data-ask-edit="${id}" ${sampleFn?"":"hidden"}>自動找位置</button><button class="btn ghost" type="button" data-place="${id}">${w.lat?"重新標位置":"標在地圖上"}</button><button class="btn ghost" type="button" data-edit-wish="">取消</button></div>
         </form>`:""}
       </div></div>`}).join("");
   Object.entries(keep).forEach(([id,v])=>{const x=$(id);if(x)x.value=v});
@@ -1478,28 +1478,36 @@ document.addEventListener("toggle",e=>{if(e.target.id==="mapbox"&&e.target.open&
 var sampleFn=true,askLL=null;
 function coordsFromUrl(u){if(!u)return null;const m=u.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)||u.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/);
   if(!m)return null;const a=+m[1],b=+m[2];return a>10.3&&a<11.3&&b>106.3&&b<107.1?[+a.toFixed(6),+b.toFixed(6)]:null}
+// 免費：用 OpenStreetMap（Nominatim）找地點，只限胡志明市範圍
+const OSM_KIND=(c,t)=>/restaurant|fast_food|food_court|street_food/.test(t)?"吃":/cafe|coffee|bakery|pastry|confectionery/.test(t)?"咖啡":/museum|attraction|viewpoint|place_of_worship|monument|memorial|artwork|theatre|park|historic/.test(t)||c==="tourism"||c==="historic"?"景點":c==="shop"||/marketplace|mall/.test(t)?"購物":"其他";
+let _lastOsm=0;
 async function lookup(name){
-  const r=await fetch("/api/lookup",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({name})});
-  if(r.status===429)throw{code:"rate_limited"};
-  if(!r.ok)throw{code:"upstream_error"};
-  return await r.json();
+  const wait=1100-(Date.now()-_lastOsm);if(wait>0)await new Promise(r=>setTimeout(r,wait));_lastOsm=Date.now();
+  const u="https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&limit=1&bounded=1&viewbox=106.55,10.90,106.85,10.68&accept-language=vi,en&q="+encodeURIComponent(name);
+  let r;try{r=await fetch(u,{headers:{"Accept":"application/json"}})}catch(_){throw{code:"upstream_error"}}
+  if(r.status===429)throw{code:"rate_limited"};if(!r.ok)throw{code:"upstream_error"};
+  const j=await r.json();if(!j.length)return{known:false};
+  const p=j[0],a=p.address||{};
+  const dist=a.city_district||a.suburb||a.county||"",road=a.road||a.pedestrian||"",num=a.house_number||"";
+  const area=[[num,road].filter(Boolean).join(" "),a.quarter||a.neighbourhood||"",dist].filter(Boolean).join(", ");
+  return{known:true,kind:OSM_KIND(p.category,p.type),area,note:"",lat:+p.lat,lng:+p.lon,locConfident:true,found:p.name||""};
 }
 function sampleErr(e){const c=e&&e.code;
   if(["not_granted","sampling_disabled","not_declared","capability_disabled","capability_removed"].includes(c)){sampleFn=null;$("askFill").hidden=true;return"這個帳號目前不能用 Claude 幫忙填，請自己輸入"}
   if(c==="rate_limited")return"用得有點頻繁，稍等一下再試";
-  if(c==="invalid_json"||c==="empty_completion")return"Claude 沒有整理出結果，可以再按一次";
+  
   if(c==="cancelled")return"";return"查詢失敗，可以再試一次"}
 async function askFill(){
   const name=$("wName").value.trim();if(!name){toast("先輸入店名");$("wName").focus();return}
-  const b=$("askFill"),st=$("askStatus");b.disabled=true;st.hidden=false;st.textContent="Claude 上網查詢中，大約 10–20 秒…";
+  const b=$("askFill"),st=$("askStatus");b.disabled=true;st.hidden=false;st.textContent="在地圖資料庫查詢中…";
   try{const r=await lookup(name);
-    if(!r||!r.known){st.textContent="Claude 不認識這個地方，請自己補充，或貼上 Google 地圖連結";return}
+    if(!r||!r.known){st.textContent="地圖資料庫找不到這個地方。可以換個寫法（例如加上路名），或加入後在地圖上點一下標位置。";return}
     if(["吃","咖啡","景點","購物","其他"].includes(r.kind))$("wKind").value=r.kind;
     if(r.area&&!$("wArea").value)$("wArea").value=String(r.area).slice(0,60);
     if(r.note&&!$("wNote").value)$("wNote").value=String(r.note).slice(0,1000);
     const okLL=typeof r.lat==="number"&&typeof r.lng==="number"&&r.locConfident&&r.lat>10.3&&r.lat<11.3&&r.lng>106.3&&r.lng<107.1;
     askLL=okLL?[+r.lat.toFixed(6),+r.lng.toFixed(6),true]:null;
-    st.textContent="已填好，確認一下再按「加入」"+(okLL?"。地圖位置是估的，可以之後再調。":"。位置不確定，加入後可以在地圖上標。")+"（資料由 Claude 上網查詢整理，建議再確認營業時間）";
+    st.textContent=`找到「${r.found||name}」，已填好區域和地圖位置。確認沒問題再按「加入」；介紹和必點可以自己寫在備註。（資料來自 OpenStreetMap）`;
   }catch(e){st.textContent=sampleErr(e)||"已取消"}
   finally{b.disabled=false}
 }
@@ -1507,11 +1515,11 @@ async function askEdit(id,btn){
   const w=S.wishes.find(x=>x._id===id);if(!w||!sampleFn)return;
   btn.disabled=true;const old=btn.textContent;btn.textContent="查詢中…";
   try{const r=await lookup($("ew-t-"+id).value.trim()||w.title);
-    if(!r||!r.known){toast("Claude 不認識這個地方");return}
+    if(!r||!r.known){toast("地圖資料庫找不到，可以手動標在地圖上");return}
     if(["吃","咖啡","景點","購物","其他"].includes(r.kind))$("ew-k-"+id).value=r.kind;
     if(r.area&&!$("ew-a-"+id).value)$("ew-a-"+id).value=String(r.area).slice(0,60);
-    if(r.note){const n=$("ew-n-"+id);n.value=n.value?n.value+"\n"+r.note:r.note}
-    toast("已補上，確認後按儲存");
+    if(typeof r.lat==="number"){await write(()=>db.doc("wishes/"+id).update({lat:+r.lat.toFixed(6),lng:+r.lng.toFixed(6)}));}
+    toast("已找到位置並標在地圖上，區域確認後按儲存");
   }catch(e){const m=sampleErr(e);if(m)toast(m)}
   finally{btn.disabled=false;btn.textContent=old}
 }
