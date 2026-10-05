@@ -971,6 +971,59 @@ tr:last-child td{border-bottom:0}
 .w-pick{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .w-pick .chip{font-size:15px;padding:6px 14px}
 
+/* translate */
+.tr-box{background:var(--surface);padding:14px;display:grid;gap:10px;margin-bottom:12px}
+.tr-box textarea{width:100%;min-height:88px;border:2px solid var(--line);background:var(--bg);padding:10px 12px;font-size:18px;line-height:1.5;resize:vertical}
+.tr-box textarea:focus{outline:none;border-color:var(--vista)}
+.tr-row{display:flex;gap:8px;justify-content:flex-end;align-items:center}
+.tr-row .btn{padding:10px 22px;font-size:16px}
+.tr-mic.on{background:var(--coral);color:var(--ink);border-color:var(--coral)}
+.tr-out{background:var(--mimosa-soft);padding:16px;display:grid;gap:8px;margin-bottom:18px}
+.tr-src{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.tr-text{font-size:26px;line-height:1.35;font-weight:700;overflow-wrap:anywhere}
+.tr-tip{font-size:13px;background:var(--surface);padding:6px 10px}
+.tr-acts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tr-acts .btn{padding:10px 18px}
+.tr-h{margin:18px 0 8px;color:var(--muted)}
+.ph-group{margin-bottom:12px}
+.ph-group .lbl{font-size:10px;color:var(--muted);margin-bottom:4px}
+.ph-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.ph{border:0;background:var(--surface);text-align:left;padding:8px 12px;cursor:pointer;display:grid;gap:1px;min-width:0}
+.ph:hover,.ph:focus-visible{background:var(--vista-soft)}
+.ph b{font-size:14px;overflow-wrap:anywhere}
+.ph span{font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.hist{display:grid;gap:4px}
+.bigshow{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;place-content:center;gap:18px;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));text-align:center}
+.bs-text{font-size:clamp(34px,10vw,64px);line-height:1.25;font-weight:800;overflow-wrap:anywhere}
+.bs-src{font-size:16px;color:var(--muted)}
+.bs-hint{font-size:12px;color:var(--muted)}
+.bigshow .btn{justify-self:center;padding:12px 28px;font-size:18px}
+/* web saves */
+.n-badge{font-family:var(--f-label);font-size:11px;opacity:.7}
+.save-add{background:var(--surface);padding:14px;display:grid;gap:8px;border-top:6px solid var(--vista)}
+.save-row{display:flex;gap:6px}
+.save-row input{flex:1 1 0;width:0;min-width:0;border:1px solid var(--line);background:var(--bg);padding:10px 12px;font-size:16px}
+.save-add textarea{width:100%;min-height:56px;border:1px solid var(--line);background:var(--bg);padding:8px 12px;font-size:15px;resize:vertical}
+.save-add .btn{padding:12px;font-size:16px}
+.save-help{margin:8px 0 14px}
+#savesList{display:grid;gap:8px}
+.save{background:var(--surface);display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden}
+.save-img{width:100%;max-height:200px;object-fit:cover;display:block;background:var(--bg)}
+.save-body{padding:12px 14px;display:grid;gap:4px;min-width:0}
+.save-site{font-size:10px;color:var(--muted)}
+.save-title{font-weight:700;overflow-wrap:anywhere}
+.save-desc{font-size:13px;color:var(--muted);overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-line}
+.save-sum{font-size:14px;background:var(--vista-soft);padding:6px 10px}
+.save-meta{font-size:12px}
+.save-places{display:grid;gap:6px;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line)}
+.sp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center}
+.sp b{overflow-wrap:anywhere}
+.sp .hint{font-size:12px}
+.act[disabled]{opacity:.55;cursor:default}
+a.act{text-decoration:none;color:var(--ink);display:inline-block}
+.save-edit{display:grid;gap:6px;margin-top:6px}
+.save-edit textarea{width:100%;min-height:80px;border:1px solid var(--line);background:var(--bg);padding:8px 10px;font-size:15px}
+
 /* quick pay */
 .quickpay{background:var(--surface);padding:20px 20px 22px;display:grid;grid-template-columns:minmax(0,1fr);gap:12px;border-top:6px solid var(--coral)}
 .qp-amt{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;background:var(--bg);padding:14px 16px 10px}
@@ -1008,7 +1061,7 @@ tr:last-child td{border-bottom:0}
 @media (max-width:640px){
   .wrap{padding-block:12px calc(96px + env(safe-area-inset-bottom,0px))}
   nav.tabs{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;border-bottom:0;border-top:2px solid var(--ink);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));gap:2px}
-  nav.tabs button{flex:1 1 0;padding:10px 2px;font-size:14px}
+  nav.tabs button{flex:1 1 0;padding:10px 0;font-size:14px;min-width:0}
   nav.tabs .n{display:block;margin:0;font-size:10px;line-height:1}
   .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
   input,select,textarea,form.row input,form.row select{font-size:16px}
@@ -1065,6 +1118,7 @@ tr:last-child td{border-bottom:0}
   <nav class="tabs" role="tablist">
     <button role="tab" id="tb-plan" data-tab="plan" aria-selected="true">行程</button>
     <button role="tab" id="tb-wish" data-tab="wish" aria-selected="false">想去</button>
+    <button role="tab" id="tb-tr" data-tab="tr" aria-selected="false">翻譯</button>
     <button role="tab" id="tb-fx" data-tab="fx" aria-selected="false">換匯</button>
     <button role="tab" id="tb-money" data-tab="money" aria-selected="false">分帳</button>
     <button role="tab" id="tb-pack" data-tab="pack" aria-selected="false">打包</button>
@@ -1080,6 +1134,17 @@ tr:last-child td{border-bottom:0}
 
     <section id="tab-wish" hidden>
       <div class="sec-head"><h2>想去清單</h2><span class="hint">按 ♥ 投票</span></div>
+      <div class="seg" role="group" aria-label="想去清單切換"><button type="button" data-wseg="places" aria-pressed="true">地點清單</button><button type="button" data-wseg="saves" aria-pressed="false">網路收藏 <span id="nSaves" class="n-badge"></span></button></div>
+      <div id="wishSaves" hidden>
+        <form class="save-add" id="saveForm">
+          <div class="save-row"><input id="saveUrl" inputmode="url" placeholder="貼上 Threads、IG 或網頁連結" aria-label="連結"><button type="button" class="act" id="pasteBtn" hidden>貼上</button></div>
+          <textarea id="saveText" placeholder="（選填）貼文文字或備註" maxlength="3000" aria-label="貼文文字或備註"></textarea>
+          <button class="btn" type="submit">收藏</button>
+        </form>
+        <div class="hint save-help">看到「必吃」「必去」的貼文就丟進來，大家都看得到。按「整理出地點」，Gemini 會把貼文裡的店抓出來，一鍵加到想去。</div>
+        <div id="savesList"><div class="empty">讀取中…</div></div>
+      </div>
+      <div id="wishPlaces">
       <div class="filters" id="wishFilters"></div>
       <details class="mapbox" id="mapbox" open><summary><span>地圖</span><span class="chev"></span></summary>
         <div class="place-bar" id="placeBar" hidden><span id="placeTxt"></span><button class="linkish" type="button" id="placeCancel">取消</button></div>
@@ -1100,6 +1165,28 @@ tr:last-child td{border-bottom:0}
         </form>
       </details>
       <div class="wishes" id="wishes"><div class="empty">讀取中…</div></div>
+      </div>
+    </section>
+
+    <section id="tab-tr" hidden>
+      <div class="sec-head"><h2>翻譯</h2><span class="hint" id="trEngineHint">中文 ⇄ 越南文</span></div>
+      <div class="seg" role="group" aria-label="翻譯方向"><button type="button" data-trdir="zh2vi" aria-pressed="true">中文 → 越南文</button><button type="button" data-trdir="vi2zh" aria-pressed="false">越南文 → 中文</button></div>
+      <form class="tr-box" id="trForm">
+        <textarea id="trIn" placeholder="輸入想說的中文…" maxlength="500" aria-label="要翻譯的文字"></textarea>
+        <div class="tr-row"><button type="button" class="act tr-mic" id="trMic" hidden aria-label="語音輸入">🎤 用說的</button><button class="btn" type="submit" id="trGo">翻譯</button></div>
+        <div class="hint" id="trStatus" hidden></div>
+      </form>
+      <div class="tr-out" id="trOut" hidden>
+        <div class="tr-src" id="trSrc"></div>
+        <div class="tr-text" id="trText"></div>
+        <div class="tr-tip" id="trTip" hidden></div>
+        <div class="tr-acts"><button type="button" class="btn" id="trPlay">▶ 播放</button><button type="button" class="act" id="trBig">放大給對方看</button><button type="button" class="act" id="trCopy">複製</button></div>
+        <div class="hint" id="trEng"></div>
+      </div>
+      <h3 class="lbl tr-h">常用句子 <span class="hint" style="letter-spacing:0;text-transform:none;font-weight:500">點一下就播放</span></h3>
+      <div id="trPhrases"></div>
+      <h3 class="lbl tr-h" id="trHistH" hidden>最近翻譯 <span class="hint" style="letter-spacing:0;text-transform:none;font-weight:500">只存在這支手機</span></h3>
+      <div id="trHist"></div>
     </section>
 
     <section id="tab-fx" hidden>
@@ -1175,6 +1262,7 @@ tr:last-child td{border-bottom:0}
     <div id="wPick"></div>
   </div>
 </div>
+<div class="bigshow" id="bigShow" hidden role="dialog" aria-label="放大顯示"><div class="bs-text" id="bsText"></div><div class="bs-src" id="bsSrc"></div><div class="bs-hint">點一下關閉 · 再按一次播放</div><button type="button" class="btn" id="bsPlay">▶ 播放</button></div>
 <div class="toast" id="toast" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script>window.__fbReady=new Promise(r=>window.__fbResolve=r);</script>
@@ -1210,7 +1298,7 @@ const DAYS=[
 const DAYIDX=Object.fromEntries(DAYS.map((x,i)=>[x.id,i]));
 const DAYNAME=id=>DAYIDX[id]!=null?`Day ${DAYIDX[id]+1}（11/${DAYS[DAYIDX[id]].d}）`:"";
 const PACK_GROUPS=["證件與錢","電子產品","衣物","藥品與日用","其他"];
-const S={mine:[],info:null,meta:{members:[],mapsList:""},fx:{rate:0},people:{},items:[],wishes:[],expenses:[],packing:[],loaded:{}};
+const S={saves:[],mine:[],info:null,meta:{members:[],mapsList:""},fx:{rate:0},people:{},items:[],wishes:[],expenses:[],packing:[],loaded:{}};
 let db=null,uid=null,meName="",wishFilter="全部",editingWish="",editingHotel=false,schedWish="";
 try{meName=localStorage.getItem("vt-me")||""}catch(e){}
 const $=id=>document.getElementById(id);
@@ -1543,6 +1631,134 @@ $("fxV").addEventListener("input",e=>{fxLast="V";$("fxT").value=(parseNum(e.targ
 $("fxT").addEventListener("input",e=>{fxLast="T";$("fxV").value=Math.round(parseNum(e.target.value)*rate()).toLocaleString("en-US")});
 $("fxV").addEventListener("blur",e=>{const n=parseNum(e.target.value);e.target.value=n?n.toLocaleString("en-US"):""});
 
+/* ---------- translate ---------- */
+const PHRASES=[
+  ["基本",[["你好","Xin chào"],["謝謝","Cảm ơn"],["不好意思／請問","Xin lỗi"],["好的","Vâng"],["不用了，謝謝","Không cần đâu, cảm ơn"],["我聽不懂","Tôi không hiểu"]]],
+  ["吃喝",[["多少錢？","Bao nhiêu tiền?"],["我要這個","Cho tôi cái này"],["五個人","Năm người"],["不要香菜","Không bỏ ngò"],["不要辣","Không cay"],["少冰","Ít đá"],["少糖","Ít đường"],["外帶","Mang về"],["結帳","Tính tiền"],["很好吃！","Ngon quá!"],["越南煉乳冰咖啡","Cà phê sữa đá"]]],
+  ["購物",[["可以便宜一點嗎？","Bớt chút được không?"],["可以刷卡嗎？","Có quẹt thẻ được không?"],["可以試穿嗎？","Cho tôi thử được không?"]]],
+  ["交通",[["請載我到這個地址","Cho tôi đến địa chỉ này"],["在這裡停","Dừng ở đây"],["廁所在哪裡？","Nhà vệ sinh ở đâu?"]]]
+];
+let trDir="zh2vi",trLast=null,trHist=[],rec=null;
+try{trHist=JSON.parse(localStorage.getItem("vt-tr")||"[]")}catch(_){}
+const SRec=window.SpeechRecognition||window.webkitSpeechRecognition;
+function renderTr(){
+  document.querySelectorAll("[data-trdir]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.trdir===trDir));
+  $("trIn").placeholder=trDir==="zh2vi"?"輸入想說的中文…":"輸入或貼上越南文（也可以請對方用說的）…";
+  $("trMic").hidden=!SRec;
+  if(!$("trPhrases").children.length)$("trPhrases").innerHTML=PHRASES.map(([g,l],gi)=>`<div class="ph-group"><div class="lbl">${g}</div><div class="ph-list">${l.map(([zh,vi],i)=>`<button type="button" class="ph" data-phr="${gi},${i}"><b>${esc(vi)}</b><span>${esc(zh)}</span></button>`).join("")}</div></div>`).join("");
+  $("trHistH").hidden=!trHist.length;
+  $("trHist").innerHTML=`<div class="hist">${trHist.map((h,i)=>`<button type="button" class="ph" data-hist="${i}"><b>${esc(h.out)}</b><span>${esc(h.src)}</span></button>`).join("")}</div>`;
+}
+function showTr(src,out,tip,engine,dir){
+  trLast={src,out,dir};
+  $("trOut").hidden=false;$("trSrc").textContent=src;$("trText").textContent=out;
+  $("trText").lang=dir==="zh2vi"?"vi":"zh-Hant";
+  $("trTip").hidden=!tip;$("trTip").textContent=tip||"";
+  $("trEng").textContent=engine?"翻譯："+engine:"";
+  $("trPlay").textContent=dir==="zh2vi"?"▶ 播放越南文":"▶ 播放中文";
+}
+function pushHist(src,out,dir){trHist=[{src,out,dir},...trHist.filter(h=>h.src!==src)].slice(0,12);try{localStorage.setItem("vt-tr",JSON.stringify(trHist))}catch(_){}renderTr()}
+async function doTranslate(){
+  const text=$("trIn").value.trim();if(!text){$("trIn").focus();return}
+  const dir=trDir,st=$("trStatus"),go=$("trGo");go.disabled=true;st.hidden=false;st.textContent="翻譯中…";
+  let res=null,why="";
+  try{const r=await fetch("/api/translate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text,dir})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.text)res={text:j.text,tip:j.tip,engine:"Gemini"};else why=j.error||"";}catch(_){}
+  if(!res){try{const lp=dir==="zh2vi"?"zh-TW|vi":"vi|zh-TW";
+      const j=await (await fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(text)+"&langpair="+lp)).json();
+      const t=j&&j.responseData&&j.responseData.translatedText;if(t&&!/MYMEMORY WARNING/i.test(t))res={text:t,tip:"",engine:why==="nokey"?"基本翻譯（Gemini 尚未設定）":"基本翻譯"}}catch(_){}}
+  go.disabled=false;
+  if(!res){st.textContent="翻譯失敗，請檢查網路再試一次";return}
+  st.hidden=true;showTr(text,res.text,res.tip,res.engine,dir);pushHist(text,res.text,dir);
+  if(dir==="zh2vi")speak(res.text,"vi-VN");
+}
+function speak(text,lang){
+  if(!("speechSynthesis" in window)){toast("這支手機不支援語音播放");return}
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=lang.startsWith("vi")?0.85:1;
+  const vs=speechSynthesis.getVoices(),v=vs.find(v=>v.lang.replace("_","-").toLowerCase().startsWith(lang.slice(0,2).toLowerCase()));
+  if(v)u.voice=v;else if(vs.length&&lang.startsWith("vi"))toast("沒有越南語聲音：到 設定 › 輔助使用 › 朗讀內容 › 聲音 下載越南語");
+  speechSynthesis.speak(u);
+}
+if("speechSynthesis" in window)speechSynthesis.getVoices();
+function toggleMic(){
+  if(!SRec)return;if(rec){rec.stop();return}
+  rec=new SRec();rec.lang=trDir==="zh2vi"?"zh-TW":"vi-VN";rec.interimResults=true;rec.continuous=false;
+  rec.onresult=e=>{$("trIn").value=[...e.results].map(r=>r[0].transcript).join("")};
+  rec.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed")toast("請允許使用麥克風")};
+  rec.onend=()=>{rec=null;$("trMic").classList.remove("on");$("trMic").textContent="🎤 用說的";if($("trIn").value.trim())doTranslate()};
+  $("trMic").classList.add("on");$("trMic").textContent="■ 說完按這裡";
+  try{rec.start()}catch(_){rec=null;$("trMic").classList.remove("on")}
+}
+function bigShow(){if(!trLast)return;$("bsText").textContent=trLast.out;$("bsText").lang=trLast.dir==="zh2vi"?"vi":"zh-Hant";$("bsSrc").textContent=trLast.src;$("bigShow").hidden=false}
+function playLast(){if(trLast)speak(trLast.out,trLast.dir==="zh2vi"?"vi-VN":"zh-TW")}
+
+/* ---------- web saves ---------- */
+let wishSeg="places",editingSave="";
+function setWishSeg(sg){wishSeg=sg;document.querySelectorAll("[data-wseg]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.wseg===sg));
+  $("wishPlaces").hidden=sg!=="places";$("wishSaves").hidden=sg!=="saves";
+  if(sg==="places"&&window._map)setTimeout(()=>{_map.invalidateSize();fitOnce()},50);
+  try{localStorage.setItem("vt-wseg",sg)}catch(_){}renderSaves()}
+const urlIn=t=>{const m=String(t||"").match(/https?:\/\/[^\s<>"'）)]+/);return m?m[0]:""};
+function ago(ts){if(!ts)return"";const d=(Date.now()-ts)/60000;if(d<1)return"剛剛";if(d<60)return Math.floor(d)+" 分鐘前";if(d<1440)return Math.floor(d/60)+" 小時前";const x=new Date(ts);return (x.getMonth()+1)+"/"+x.getDate()}
+async function addSave(){
+  const raw=$("saveUrl").value.trim(),url=safeUrl(urlIn(raw)||urlIn($("saveText").value)||raw),text=$("saveText").value.trim();
+  if(!url&&!text){toast("貼上連結或文字");$("saveUrl").focus();return}
+  if(url&&S.saves.some(x=>x.url===url)){toast("這個連結已經收藏過了");return}
+  let ref;const ok=await write(async()=>{ref=await db.collection("saves").add({url,text,by:me(),createdAt:Date.now(),status:url?"loading":"ok",title:"",desc:"",image:"",site:url?linkLabel(url):"筆記"})},"已收藏");
+  if(!ok)return;$("saveUrl").value="";$("saveText").value="";
+  if(url&&ref&&ref.id)fetchPreview(ref.id,url);
+}
+async function fetchPreview(id,url){
+  let upd={status:"fail"};
+  try{const r=await fetch("/api/preview",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({url})});
+    if(r.ok){const j=await r.json();upd={status:"ok",title:j.title||"",desc:j.desc||"",image:safeUrl(j.image)||"",site:j.site||linkLabel(url)}}}catch(_){}
+  try{await db.doc("saves/"+id).update(upd)}catch(_){}
+}
+async function extractSave(id,btn){
+  const s=S.saves.find(x=>x._id===id);if(!s)return;
+  const text=[s.title,s.desc,s.text].filter(Boolean).join("\n");
+  if(text.length<4){toast("這則沒有抓到內容，按「補文字」貼上貼文內容");editingSave=id;renderSaves();return}
+  btn.disabled=true;btn.textContent="Gemini 整理中…";
+  try{const r=await fetch("/api/extract",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text})});const j=await r.json().catch(()=>({}));
+    if(!r.ok){toast(j.error==="nokey"?"還沒設定 Gemini 金鑰，請跟 Miko 說":j.error==="rate"?"用得太頻繁，稍等一分鐘":"整理失敗，再試一次");return}
+    await db.doc("saves/"+id).update({places:j.places||[],summary:j.summary||""});
+    if(!(j.places||[]).length)toast("沒有找到具體的店名，可以「補文字」貼上完整內容再試");
+  }catch(_){toast("整理失敗，再試一次")}finally{btn.disabled=false;btn.textContent="整理出地點"}
+}
+async function addPlaceFromSave(id,i){
+  const s=S.saves.find(x=>x._id===id),p=s&&s.places&&s.places[i];if(!p)return;
+  const kind=["吃","咖啡","景點","購物","其他"].includes(p.kind)?p.kind:"其他",who=me();let ref;
+  const ok=await write(async()=>{ref=await db.collection("wishes").add({title:p.name,kind,area:"",link:s.url||"",note:p.note||"",votes:who?[who]:[],addedBy:who||"",source:"web",createdAt:Date.now()})},`已把「${p.name}」加到想去`);
+  if(!ok||!ref)return;
+  try{const r=await lookup(p.name);if(r&&r.known&&typeof r.lat==="number")await db.doc("wishes/"+ref.id).update({lat:+r.lat.toFixed(6),lng:+r.lng.toFixed(6),area:r.area||""})}catch(_){}
+}
+function renderSaves(){
+  $("nSaves").textContent=S.saves.length?String(S.saves.length):"";
+  if(wishSeg!=="saves")return;
+  if(!S.loaded.saves)return;
+  const titles=new Set(S.wishes.map(w=>String(w.title||"").toLowerCase()));
+  const keep={};$("savesList").querySelectorAll("textarea").forEach(x=>{if(x.id)keep[x.id]=x.value});
+  const list=[...S.saves].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  $("savesList").innerHTML=list.length?list.map(s=>{const id=esc(s._id),url=safeUrl(s.url);
+    return `<article class="save">${s.image?`<img class="save-img" src="${esc(s.image)}" alt="" loading="lazy" referrerpolicy="no-referrer">`:""}
+    <div class="save-body">
+      <div class="save-site lbl">${esc(s.site||"")}</div>
+      <div class="save-title">${esc(s.title||(s.status==="loading"?"讀取預覽中…":url?(s.status==="fail"?"抓不到預覽，可按「補文字」貼上內容":url):"筆記"))}</div>
+      ${s.summary?`<div class="save-sum">${esc(s.summary)}</div>`:""}
+      ${s.desc?`<div class="save-desc">${esc(s.desc)}</div>`:""}
+      ${s.text?`<div class="detail">${esc(s.text)}</div>`:""}
+      <div class="save-meta hint">${esc(s.by||"有人")} 收藏 · ${ago(s.createdAt)}</div>
+      <div class="wish-acts">${url?`<a class="act" href="${esc(url)}" target="_blank" rel="noopener">打開 ↗</a>`:""}<button type="button" class="act primary" data-extract="${id}">整理出地點</button><button type="button" class="act" data-save-note="${id}">補文字</button><button type="button" class="icon-btn" data-del-save="${id}">刪除</button></div>
+      ${editingSave===s._id?`<div class="save-edit"><textarea id="se-${id}" placeholder="貼上貼文內容或備註">${esc(s.text||"")}</textarea><div class="btns"><button type="button" class="btn" data-save-text="${id}">儲存</button><button type="button" class="btn ghost" data-save-note="">取消</button></div></div>`:""}
+      ${Array.isArray(s.places)&&s.places.length?`<div class="save-places"><div class="lbl hint">貼文提到的地點</div>${s.places.map((p,i)=>{const has=titles.has(String(p.name).toLowerCase()),k=["吃","咖啡","景點","購物","其他"].includes(p.kind)?p.kind:"其他";
+        return `<div class="sp"><div><b>${esc(p.name)}</b> <span class="cat cat-${k}">${k}</span>${p.note?`<div class="hint">${esc(p.note)}</div>`:""}</div><button type="button" class="act ${has?"":"primary"}" data-add-place="${id}|${i}" ${has?"disabled":""}>${has?"已在想去":"＋ 想去"}</button></div>`}).join("")}</div>`:""}
+    </div></article>`}).join(""):`<div class="empty">還沒有收藏。看到「必吃」「必去」的貼文，複製連結貼上來就好。</div>`;
+  Object.entries(keep).forEach(([k,v])=>{const x=$(k);if(x)x.value=v});
+}
+document.addEventListener("error",e=>{const t=e.target;if(t&&t.classList&&t.classList.contains("save-img"))t.remove()},true);
+if(navigator.clipboard&&navigator.clipboard.readText)$("pasteBtn").hidden=false;
+
 /* ---------- live exchange rate ---------- */
 let liveFx=null;
 async function refreshFx(){
@@ -1634,17 +1850,19 @@ function renderPack(){
   $("packList").innerHTML=html||`<div class="empty">${packFilter==="我還沒帶"?"都帶齊了":"這個分類還沒有東西"}</div>`;
 }
 
-function renderAll(){renderHeader();if(!editingHotel)renderInfo();renderPlan();renderWish();renderFx();renderMoney();renderPack()}
+function renderAll(){renderSaves();renderTr();renderHeader();if(!editingHotel)renderInfo();renderPlan();renderWish();renderFx();renderMoney();renderPack()}
 
 /* ---------- events ---------- */
 function showTab(t){document.querySelectorAll("nav.tabs [data-tab]").forEach(x=>x.setAttribute("aria-selected",x.dataset.tab===t));
-  ["plan","wish","fx","money","pack"].forEach(k=>$("tab-"+k).hidden=k!==t);
+  ["plan","wish","tr","fx","money","pack"].forEach(k=>$("tab-"+k).hidden=k!==t);
   if(t==="wish"&&window._map)setTimeout(()=>{_map.invalidateSize();fitOnce()},50);
   if(matchMedia("(max-width:640px)").matches&&showTab._init)document.querySelector("main").scrollIntoView();showTab._init=true;try{localStorage.setItem("sgn-tab",t)}catch(_){}}
 document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b)showTab(b.dataset.tab)});
 $("openSettings").onclick=()=>{$("settings").hidden=!$("settings").hidden};
 $("ePayer").addEventListener("change",e=>e.target.dataset.touched="1");
 
+$("trIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();doTranslate()}});
+$("bigShow").addEventListener("click",e=>{if(e.target.id!=="bsPlay")$("bigShow").hidden=true});
 document.addEventListener("click",async e=>{
   const t=e.target.closest("button,a[data-jump]");if(!t)return;
   const d=t.dataset;
@@ -1658,6 +1876,20 @@ document.addEventListener("click",async e=>{
   if(t.id==="cancelSwitch"){switching=false;renderHeader();return}
   if(d.q){fxLast="V";$("fxV").value=Number(d.q).toLocaleString("en-US");$("fxT").value=(Number(d.q)/rate()).toLocaleString("en-US",{maximumFractionDigits:0});return}
   if(d.wf){wishFilter=d.wf;renderWish();return}
+  if(d.wseg){setWishSeg(d.wseg);return}
+  if(d.trdir){trDir=d.trdir;renderTr();$("trIn").focus();return}
+  if(d.phr){const [g,i]=d.phr.split(",").map(Number),p=PHRASES[g][1][i];showTr(p[0],p[1],"","常用句子","zh2vi");speak(p[1],"vi-VN");return}
+  if(d.hist){const h=trHist[+d.hist];if(h){showTr(h.src,h.out,"","最近翻譯",h.dir);playLast()}return}
+  if(t.id==="trMic"){toggleMic();return}
+  if(t.id==="trPlay"||t.id==="bsPlay"){playLast();return}
+  if(t.id==="trBig"){bigShow();return}
+  if(t.id==="trCopy"){if(trLast)try{await navigator.clipboard.writeText(trLast.out);toast("已複製")}catch(_){toast("複製失敗")}return}
+  if(t.id==="pasteBtn"){try{const x=await navigator.clipboard.readText();if(x){const u=urlIn(x);$("saveUrl").value=u||x;if(!u)$("saveText").value=x}}catch(_){toast("沒辦法讀取剪貼簿，請長按輸入框貼上")}return}
+  if(d.extract){extractSave(d.extract,t);return}
+  if(d.addPlace){const [sid,i]=d.addPlace.split("|");t.disabled=true;await addPlaceFromSave(sid,+i);return}
+  if(d.saveNote!==undefined){editingSave=editingSave===d.saveNote?"":d.saveNote;renderSaves();return}
+  if(d.saveText){const v=($("se-"+d.saveText)||{}).value||"";const ok=await write(()=>db.doc("saves/"+d.saveText).update({text:v.trim()}),"已儲存");if(ok){editingSave="";renderSaves()}return}
+  if(d.delSave){await write(()=>db.doc("saves/"+d.delSave).delete(),"已刪除");return}
   if(d.mode){setMode(d.mode);return}
   if(d.pf){packFilter=d.pf;renderPack();return}
   if(d.delMine){await write(()=>db.doc("mine/"+keyOf(meName)+"/entries/"+d.delMine).delete(),"已刪除");return}
@@ -1716,12 +1948,19 @@ document.addEventListener("submit",async e=>{
   if(f.id==="memberForm"){const n=$("memberName").value.trim();if(!n)return;if(S.meta.members.includes(n)){toast("已經有這個人了");return}
     const ok=await write(()=>db.doc("trip/meta").update({members:[...S.meta.members,n]}),`歡迎 ${n}`);if(ok)$("memberName").value="";return}
   if(f.id==="welcomeForm"){await welcomeSubmit();return}
+  if(f.id==="trForm"){await doTranslate();return}
+  if(f.id==="saveForm"){await addSave();return}
   if(f.id==="mapsForm"){const u=safeUrl($("mapsUrl").value.trim());await write(()=>db.doc("trip/meta").update({mapsList:u}),"已儲存清單連結");return}
   if(f.id==="rateForm"){const r=Number($("rateInput").value);if(!(r>0))return;liveFx=null;await write(()=>db.doc("trip/fx").set({rate:r,updatedAt:new Date().toISOString(),source:"手動設定"}),"匯率已更新");return}
 });
 
 /* ---------- boot ---------- */
 try{const t=localStorage.getItem("sgn-tab");if(t&&$("tab-"+t))showTab(t)}catch(_){}
+try{const sg=localStorage.getItem("vt-wseg");if(sg)setWishSeg(sg)}catch(_){}
+(function(){const q=new URLSearchParams(location.search);if(!q.has("su")&&!q.has("sx")&&!q.has("st"))return;
+  const u=urlIn(q.get("su")||"")||urlIn(q.get("sx")||"")||urlIn(q.get("st")||"");
+  showTab("wish");setWishSeg("saves");$("saveUrl").value=u;const tx=[q.get("st"),q.get("sx")].filter(Boolean).join("\n").replace(u,"").trim();if(tx)$("saveText").value=tx;
+  history.replaceState(null,"","/");toast("按「收藏」就存起來了")})();
 renderAll();
 (async()=>{
   const r=await window.__fbReady;
@@ -1735,7 +1974,7 @@ renderAll();
   refreshFx();
   db.collection("people").onSnapshot(s=>{S.people=Object.fromEntries(s.docs.map(x=>[x.id,x.data()]));S.loaded.people=true;renderAll()},err);
   const sub=(col)=>db.collection(col).onSnapshot(s=>{S[col]=s.docs.map(x=>({...x.data(),_id:x.id}));S.loaded[col]=true;renderAll()},err);
-  ["items","wishes","expenses","packing"].forEach(sub);
+  ["items","wishes","expenses","packing","saves"].forEach(sub);
   renderAll();
 })();
 function err(e){if(e&&e.code==="permission-denied")notice("沒有權限讀取資料，請重新整理。");else if(e)toast("同步中斷，重新整理頁面試試")}
