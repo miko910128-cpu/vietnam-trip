@@ -908,9 +908,35 @@ tr:last-child td{border-bottom:0}
 .settle div{background:var(--vista-soft);padding:8px 12px;font-size:14px}
 .split{display:flex;flex-wrap:wrap;gap:6px;width:100%;font-size:13px;color:var(--muted);align-items:center}
 .split label{display:flex;gap:4px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:2px 10px;cursor:pointer;color:var(--ink)}
-.exp-list{background:var(--surface);padding-inline:14px;margin-top:14px}
-.exp{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding-block:10px;border-bottom:1px solid var(--line)}
+.exp-list{background:var(--surface);padding-inline:14px;margin-top:8px}
+.exp{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding-block:10px;border-bottom:1px solid var(--line);width:100%;text-align:left;border-top:0;border-left:0;border-right:0;background:none;font:inherit;color:inherit;cursor:pointer}
 .exp:last-child{border-bottom:0}
+.exp.repay{grid-template-columns:minmax(0,1fr) auto auto;cursor:default}
+.exp.repay .ti{color:var(--muted);font-weight:500}
+.exp .mine-part{font-size:11px;color:var(--ink);background:var(--peach-soft);padding:0 6px;margin-left:4px}
+.exp-day{display:flex;justify-content:space-between;gap:8px;padding:12px 0 6px;font-size:12px;color:var(--muted);font-weight:700;border-bottom:2px solid var(--line)}
+.exp-day .num{font-weight:600}
+.settle .st{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center}
+.settle .st.me{background:var(--coral-soft)}
+.settle .st small{display:block;font-size:11px;color:var(--muted);text-align:right}
+.settle .st .num{text-align:right}
+.settle .st .act{border:1px solid var(--line);background:var(--bg);padding:6px 10px;font-size:13px;cursor:pointer;color:var(--ink);white-space:nowrap}
+.bal-details{background:var(--surface);margin-bottom:4px}
+.bal-details>summary{cursor:pointer;padding:10px 14px;font-size:14px;font-weight:700;color:var(--muted)}
+.bal-details .table-wrap{margin:0}
+.who-chips{display:flex;flex-wrap:wrap;gap:6px}
+.wc{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 14px;font-size:15px;cursor:pointer;color:var(--ink);min-height:38px}
+#ePayerChips .wc[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.who-chips.split .wc[aria-pressed="true"]{background:var(--coral-soft);border-color:var(--coral);font-weight:700}
+.qp-field{display:grid;gap:6px}
+.qp-lbl{font-size:13px;color:var(--muted);font-weight:700}
+.qp-lbl span{font-weight:500;color:var(--ink);margin-left:4px}
+.qp-btns{display:flex;gap:8px;align-items:stretch}
+.qp-btns .qp-go{flex:1 1 auto}
+.qp-btns .act{border:1px solid var(--line);background:var(--bg);padding:0 18px;font-size:15px;cursor:pointer;color:var(--ink)}
+.qp-editing{background:var(--mimosa-soft);padding:8px 12px;font-size:14px;overflow-wrap:anywhere}
+#eDelete{justify-self:center;border:0;background:none;color:var(--danger);font-size:14px;padding:6px 12px;cursor:pointer;text-decoration:underline}
+.quickpay.editing{border-top-color:var(--mimosa)}
 .exp .ti{font-weight:700;overflow-wrap:anywhere}
 .exp .sub{font-size:12px;color:var(--muted)}
 .exp .amt{text-align:right;font-family:var(--f-label);font-weight:600}
@@ -1043,7 +1069,7 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
 .qp-tags button[aria-pressed="true"]{background:var(--coral-soft);border-color:var(--coral)}
 .quickpay>input{width:100%;min-width:0;border:1px solid var(--line);background:var(--bg);padding:9px 12px;font-size:16px}
 .qp-row{display:flex;gap:8px;align-items:center;font-size:14px;min-width:0}
-.qp-row label{flex:none}
+.qp-row label{flex:none;color:var(--muted);font-weight:700;font-size:13px}
 .qp-row select{border:1px solid var(--line);background:var(--bg);padding:8px 10px;font-size:16px;flex:1 1 0;width:0;min-width:0}
 .qp-go{padding:14px;font-size:16px}
 
@@ -1210,6 +1236,7 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
     <section id="tab-money" hidden>
       <div class="seg" role="group" aria-label="記帳模式"><button type="button" data-mode="group" aria-pressed="true">大家分帳</button><button type="button" data-mode="mine" aria-pressed="false">我的記帳</button></div>
       <form class="quickpay" id="expForm">
+        <div class="qp-editing" id="eEditing" hidden>正在修改：<b id="eEditTitle"></b></div>
         <div class="qp-amt">
           <div class="cur-toggle" role="radiogroup" aria-label="幣別">
             <button type="button" role="radio" data-cur="VND" aria-checked="true">₫</button>
@@ -1219,9 +1246,12 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
         </div>
         <div class="qp-conv hint" id="eConv">輸入金額</div>
         <div class="qp-tags" id="eTags"></div>
-        <input id="eTitle" placeholder="項目" maxlength="60" required aria-label="項目">
-        <div class="qp-row"><label for="ePayer" class="grp-only">誰先付</label><select id="ePayer" class="grp-only"></select><select id="eDay" aria-label="哪一天"></select></div>
-        <button class="btn qp-go" type="submit" id="eGo">記一筆 · 全員平分</button>
+        <input id="eTitle" placeholder="項目（可不填）" maxlength="60" aria-label="項目">
+        <div class="qp-field grp-only"><div class="qp-lbl">誰付錢</div><div class="who-chips" id="ePayerChips"></div></div>
+        <div class="qp-field grp-only"><div class="qp-lbl">分給誰 <span id="eSplitHint"></span></div><div class="who-chips split" id="eSplitChips"></div></div>
+        <div class="qp-row"><label for="eDay">哪一天</label><select id="eDay"></select></div>
+        <div class="qp-btns"><button class="btn qp-go" type="submit" id="eGo">記一筆</button><button type="button" class="act" id="eCancel" hidden>取消</button></div>
+        <button type="button" class="act danger" id="eDelete" hidden>刪除這筆</button>
       </form>
       <div id="mineView" hidden>
         <div class="private">只有你自己看得到這裡的紀錄</div>
@@ -1231,10 +1261,11 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
       </div>
       <div id="groupView">
       <div class="sum" id="moneySum" style="margin-top:16px"></div>
-      <div class="sec-head" style="margin-top:20px"><h2 style="font-size:18px">怎麼還</h2></div>
+      <div class="sec-head" style="margin-top:20px"><h2 style="font-size:18px">怎麼還</h2><span class="hint">還完按「已還」就會歸零</span></div>
       <div class="settle" id="settle"></div>
-      <div class="table-wrap"><table id="balTable"></table></div>
-      <div class="sec-head"><h2 style="font-size:18px">紀錄</h2></div>
+      <details class="bal-details"><summary>每個人明細</summary><div class="table-wrap"><table id="balTable"></table></div></details>
+      <div class="sec-head" style="margin-top:20px"><h2 style="font-size:18px">紀錄</h2><span class="hint">點一筆可以修改</span></div>
+      <div class="filters" id="expFilters"></div>
       <div class="exp-list" id="expList"></div>
       </div>
     </section>
@@ -1775,62 +1806,114 @@ async function refreshFx(){
 setInterval(()=>{if(document.visibilityState==="visible")refreshFx()},30*60*1000);
 
 /* ---------- money ---------- */
-let eCur="VND",moneyMode="group";
-function setMode(m){moneyMode=m;document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
+let eCur="VND",moneyMode="group",ePayer="",eSplit=null,eEdit=null,expFilter="all",delArm=0;
+function setMode(m){moneyMode=m;if(eEdit)resetExpForm();
+  document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.mode===m));
   $("mineView").hidden=m!=="mine";$("groupView").hidden=m!=="group";document.querySelectorAll(".grp-only").forEach(x=>x.hidden=m!=="group");
-  $("eGo").textContent=m==="group"?"記一筆 · 全員平分":"記到我的帳";updConv();renderMine()}
+  updConv();renderMine()}
+const todayId=()=>{const t=new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Ho_Chi_Minh"});return DAYIDX[t]!=null?t:"pre"};
+const dayLabel=d=>d==="pre"?"出發前":DAYNAME(d)||"其他";
+const fmtAmt=e=>e.currency==="TWD"?fmtTWD(e.amount):fmtVND(e.amount);
+const altAmt=e=>e.currency==="TWD"?"≈ "+fmtVND(e.amount*(Number(e.rate)||rate())):"≈ "+fmtTWD(toTWD(e));
+function toTWD(e){return e.currency==="TWD"?Number(e.amount):Number(e.amount)/(Number(e.rate)||rate())}
+function splitOf(e){return Array.isArray(e.split)&&e.split.length?e.split:S.meta.members}
+function splitText(e){const sp=splitOf(e),all=!Array.isArray(e.split)||!e.split.length;
+  if(all)return"全員平分";if(sp.length===1)return sp[0]===e.payer?"只算自己":"分給 "+sp[0];return"分給 "+sp.join("、")}
+function balances(){const bal={},add=n=>bal[n]||(bal[n]={paid:0,share:0,spent:0});S.meta.members.forEach(add);
+  S.expenses.forEach(e=>{const t=toTWD(e),sp=splitOf(e);if(!e.payer||!sp.length)return;add(e.payer).paid+=t;
+    sp.forEach(n=>{add(n).share+=t/sp.length;if(e.type!=="repay")bal[n].spent+=t/sp.length})});
+  return bal}
+function settlePlan(bal){const cred=[],debt=[];
+  Object.entries(bal).forEach(([n,b])=>{const v=b.paid-b.share;if(v>0.5)cred.push([n,v]);else if(v<-0.5)debt.push([n,-v])});
+  cred.sort((a,b)=>b[1]-a[1]);debt.sort((a,b)=>b[1]-a[1]);const out=[];let i=0,j=0;
+  while(i<debt.length&&j<cred.length){const x=Math.min(debt[i][1],cred[j][1]);out.push([debt[i][0],cred[j][0],x]);debt[i][1]-=x;cred[j][1]-=x;if(debt[i][1]<0.5)i++;if(cred[j][1]<0.5)j++}
+  return out}
+function renderWhoChips(){const m=S.meta.members;
+  if(!ePayer||!m.includes(ePayer))ePayer=m.includes(me())?me():(m[0]||"");
+  if(eSplit)eSplit=eSplit.filter(n=>m.includes(n));if(eSplit&&!eSplit.length)eSplit=null;
+  $("ePayerChips").innerHTML=m.map(n=>`<button type="button" class="wc" data-payer="${esc(n)}" aria-pressed="${n===ePayer}">${esc(n)}</button>`).join("");
+  $("eSplitChips").innerHTML=`<button type="button" class="wc" data-split="*" aria-pressed="${!eSplit}">全員</button>`+m.map(n=>`<button type="button" class="wc" data-split="${esc(n)}" aria-pressed="${!!eSplit&&eSplit.includes(n)}">${esc(n)}</button>`).join("")}
+function updConv(){const a=Number($("eAmt").value)||0,r=(eEdit&&eEdit.rate)||rate(),tw=eCur==="VND"?a/r:a;
+  let s=a?(eCur==="VND"?"≈ "+fmtTWD(tw):"≈ "+fmtVND(a*r)):"輸入金額";
+  if(moneyMode==="group"){const sp=eSplit||S.meta.members,n=Math.max(1,sp.length);
+    $("eSplitHint").textContent=!eSplit?`全員 ${n} 人平分`:n===1?(sp[0]===ePayer?`只算 ${sp[0]} 自己，不影響分帳`:`這筆全算 ${sp[0]} 的`):`${n} 人平分`;
+    if(a)s+=" · "+(n===1?sp[0]+" "+fmtTWD(tw):"每人 "+fmtTWD(tw/n))}
+  $("eConv").textContent=s;
+  $("eGo").textContent=eEdit?"儲存修改":moneyMode==="group"?"記一筆":"記到我的帳"}
+$("eAmt").addEventListener("input",updConv);
+$("eDay").addEventListener("change",e=>e.target.dataset.touched="1");
+function setCur(c){eCur=c;document.querySelectorAll(".cur-toggle button").forEach(b=>b.setAttribute("aria-checked",b.dataset.cur===c))}
+function resetExpForm(){eEdit=null;eSplit=null;delArm=0;$("eAmt").value="";$("eTitle").value="";
+  document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed","false"));
+  $("eEditing").hidden=true;$("eCancel").hidden=true;$("eDelete").hidden=true;$("eDelete").textContent="刪除這筆";$("expForm").classList.remove("editing");
+  $("eDay").dataset.touched="";$("eDay").value=todayId();renderWhoChips();updConv()}
+function startEdit(kind,id){
+  const e=(kind==="mine"?S.mine:S.expenses).find(x=>x._id===id);if(!e)return;
+  eEdit={kind,id,rate:Number(e.rate)||0};delArm=0;
+  $("eAmt").value=e.amount;setCur(e.currency==="TWD"?"TWD":"VND");$("eTitle").value=e.title||"";
+  document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.tag===e.title)));
+  if(kind!=="mine"){ePayer=e.payer;eSplit=Array.isArray(e.split)&&e.split.length?[...e.split]:null}
+  $("eDay").value=e.day||"pre";$("eDay").dataset.touched="1";
+  $("eEditTitle").textContent=(e.title||"其他")+" · "+fmtAmt(e);$("eEditing").hidden=false;$("eCancel").hidden=false;$("eDelete").hidden=false;$("expForm").classList.add("editing");
+  renderWhoChips();updConv();$("expForm").scrollIntoView({behavior:"smooth",block:"start"})}
+async function saveExpense(){
+  const amt=Number($("eAmt").value);if(!(amt>0)){toast("先輸入金額");$("eAmt").focus();return}
+  const title=$("eTitle").value.trim()||"其他",day=$("eDay").value||"pre",r=+((eEdit&&eEdit.rate)||rate()).toFixed(4);
+  let ok;
+  if(moneyMode==="mine"){if(!meName){toast("先選你是誰");return}
+    const col="mine/"+keyOf(meName)+"/entries",data={title,amount:amt,currency:eCur,day,rate:r};
+    ok=await write(()=>eEdit?db.doc(col+"/"+eEdit.id).update(data):db.collection(col).add({...data,createdAt:Date.now()}),eEdit?"已修改":"記到你的帳了")}
+  else{if(!ePayer){toast("先在設定加入成員");return}
+    const data={title,amount:amt,currency:eCur,day,payer:ePayer,split:eSplit?[...eSplit]:null,rate:r};
+    ok=await write(()=>eEdit?db.doc("expenses/"+eEdit.id).update(data):db.collection("expenses").add({...data,by:me()||"",createdAt:Date.now()}),eEdit?"已修改":"記好了")}
+  if(ok)resetExpForm()}
+async function deleteEditing(){
+  if(!eEdit)return;
+  if(Date.now()-delArm>3000){delArm=Date.now();$("eDelete").textContent="再按一次確定刪除";setTimeout(()=>{if(Date.now()-delArm>=3000)$("eDelete").textContent="刪除這筆"},3100);return}
+  const path=eEdit.kind==="mine"?"mine/"+keyOf(meName)+"/entries/"+eEdit.id:"expenses/"+eEdit.id;
+  const ok=await write(()=>db.doc(path).delete(),"已刪除");if(ok)resetExpForm()}
+async function markRepaid(from,to,x){
+  await write(()=>db.collection("expenses").add({type:"repay",title:"還款",amount:+x.toFixed(2),currency:"TWD",day:todayId(),payer:from,split:[to],by:me()||"",createdAt:Date.now()}),`已記錄 ${from} 還 ${to} ${fmtTWD(x)}`)}
 function renderMine(){
   if(moneyMode!=="mine")return;
   if(!meName){$("mineSum").innerHTML="";$("mineBars").innerHTML="";$("mineList").innerHTML=`<div class="empty" style="padding-block:12px">先選你是誰才能記帳</div>`;return}
   const L=[...S.mine].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  const tot=L.reduce((a,e)=>a+toTWD(e),0);
-  const today=new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Ho_Chi_Minh"});
-  const td=L.filter(e=>e.day===today).reduce((a,e)=>a+toTWD(e),0);
-  $("mineSum").innerHTML=`<div><div class="lbl hint">我總共花了</div><div class="v">${fmtTWD(tot)}</div></div><div><div class="lbl hint">${DAYIDX[today]!=null?"今天":"平均每天"}</div><div class="v">${fmtTWD(DAYIDX[today]!=null?td:tot/5)}</div></div>`;
+  const tot=L.reduce((a,e)=>a+toTWD(e),0),today=todayId(),td=L.filter(e=>e.day===today).reduce((a,e)=>a+toTWD(e),0);
+  $("mineSum").innerHTML=`<div><div class="lbl hint">我總共花了</div><div class="v">${fmtTWD(tot)}</div></div><div><div class="lbl hint">${today!=="pre"?"今天":"平均每天"}</div><div class="v">${fmtTWD(today!=="pre"?td:tot/5)}</div></div>`;
   const by={};L.forEach(e=>{const k=e.title||"其他";by[k]=(by[k]||0)+toTWD(e)});
-  const ent=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,6);const mx=ent.length?ent[0][1]:1;
+  const ent=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,6),mx=ent.length?ent[0][1]:1;
   $("mineBars").innerHTML=ent.length?ent.map(([k,v])=>`<div class="bar"><span>${esc(k)}</span><span class="track"><span class="fill" style="width:${Math.max(3,v/mx*100)}%"></span></span><span class="num">${fmtTWD(v)}</span></div>`).join(""):`<div class="hint">記第一筆後，這裡會顯示錢花在哪裡</div>`;
-  $("mineList").innerHTML=L.length?L.map(e=>`<div class="exp"><div style="min-width:0"><div class="ti">${esc(e.title)}</div><div class="sub">${e.day==="pre"?"出發前":esc(DAYNAME(e.day))}</div></div>
-    <div class="amt">${e.currency==="TWD"?fmtTWD(e.amount):fmtVND(e.amount)}<small>${e.currency==="TWD"?"≈ "+fmtVND(e.amount*rate()):"≈ "+fmtTWD(toTWD(e))}</small></div>
-    <button class="icon-btn" type="button" data-del-mine="${esc(e._id)}" aria-label="刪除">✕</button></div>`).join(""):`<div class="empty" style="padding-block:12px">還沒有紀錄</div>`;
+  $("mineList").innerHTML=L.length?L.map(e=>`<button type="button" class="exp" data-edit-mine="${esc(e._id)}"><div style="min-width:0"><div class="ti">${esc(e.title)}</div><div class="sub">${esc(dayLabel(e.day))}</div></div>
+    <div class="amt">${fmtAmt(e)}<small>${altAmt(e)}</small></div></button>`).join(""):`<div class="empty" style="padding-block:12px">還沒有紀錄</div>`;
 }
-function updConv(){const a=Number($("eAmt").value)||0;const n=Math.max(1,S.meta.members.length);const tw=eCur==="VND"?a/rate():a;
-  $("eConv").textContent=a?(eCur==="VND"?"≈ "+fmtTWD(tw):"≈ "+fmtVND(a*rate()))+(moneyMode==="group"?" · 每人 "+fmtTWD(tw/n):""):"輸入金額"}
-$("eAmt").addEventListener("input",updConv);
-$("eDay").addEventListener("change",e=>e.target.dataset.touched="1");
-function toTWD(e){return e.currency==="TWD"?Number(e.amount):Number(e.amount)/rate()}
 function renderMoney(){
   const m=S.meta.members,who=me();
   const keepSel=(id,html)=>{const el=$(id),v=el.value;el.innerHTML=html;if(v)el.value=v};
-  keepSel("ePayer",m.map(n=>`<option>${esc(n)}</option>`).join(""));
-  if(who&&!$("ePayer").dataset.touched)$("ePayer").value=who;
   keepSel("eDay",`<option value="pre">出發前</option>`+DAYS.map((d,i)=>`<option value="${d.id}">Day ${i+1} · 11/${d.d}</option>`).join(""));
-  if(!$("eDay").dataset.touched){const t=new Date().toLocaleDateString("sv-SE",{timeZone:"Asia/Ho_Chi_Minh"});$("eDay").value=DAYIDX[t]!=null?t:"pre"}
+  if(!$("eDay").dataset.touched)$("eDay").value=todayId();
   if(!$("eTags").children.length)$("eTags").innerHTML=["吃飯","咖啡","Grab","門票","購物","住宿","機票"].map(x=>`<button type="button" data-tag="${x}">${x}</button>`).join("");
-  updConv();
-  const bal={};const names=new Set(m);
-  S.expenses.forEach(e=>names.add(e.payer));
-  names.forEach(n=>bal[n]={paid:0,share:0});
-  let total=0;
-  S.expenses.forEach(e=>{const t=toTWD(e);total+=t;bal[e.payer].paid+=t;m.forEach(n=>{bal[n].share+=t/m.length})});
-  const mb=who&&bal[who],net=mb?mb.paid-mb.share:0;
-  $("moneySum").innerHTML=`<div class="mine-card"><div class="lbl hint">${who?esc(who)+" 要支付的":"我要支付的"}</div><div class="v">${mb?fmtTWD(mb.share):"—"}</div>
-      ${mb?`<div class="sub">已先付 ${fmtTWD(mb.paid)}，${net>0.5?"會收回 "+fmtTWD(net):net<-0.5?"還要給 "+fmtTWD(-net):"剛好打平"}</div>`:""}</div>
+  renderWhoChips();updConv();
+  const bal=balances(),names=Object.keys(bal);
+  const total=S.expenses.filter(e=>e.type!=="repay").reduce((a,e)=>a+toTWD(e),0);
+  const mb=who&&bal[who],net=mb?mb.paid-mb.share:0,plan=settlePlan(bal);
+  const myPlan=who?plan.filter(([f,t])=>f===who||t===who):[];
+  $("moneySum").innerHTML=`<div class="mine-card"><div class="lbl hint">${who?esc(who)+" 要支付的":"我要支付的"}</div><div class="v">${mb?fmtTWD(mb.spent):"—"}</div>
+      ${mb?`<div class="sub">${mb.paid>0.5?"已經先付 "+fmtTWD(mb.paid-(mb.share-mb.spent))+"，":""}${net>0.5?"會收回 "+fmtTWD(net):net<-0.5?"還要給 "+myPlan.filter(p=>p[0]===who).map(p=>esc(p[1])+" "+fmtTWD(p[2])).join("、"):"已經打平"}</div>`:""}</div>
     <div><div class="lbl hint">總花費</div><div class="v">${fmtTWD(total)}</div></div>
     <div><div class="lbl hint">平均每人</div><div class="v">${m.length?fmtTWD(total/m.length):"—"}</div></div>`;
-  $("balTable").innerHTML=`<thead><tr><th>成員</th><th class="r">先付了</th><th class="r">應分攤</th><th class="r">多付(+) / 欠(−)</th></tr></thead><tbody>${[...names].map(n=>{const b=bal[n];const net=b.paid-b.share;
-    return `<tr><td>${esc(n)}${m.includes(n)?"":" <span class='hint'>(已移除)</span>"}</td><td class="r num">${fmtTWD(b.paid)}</td><td class="r num">${fmtTWD(b.share)}</td><td class="r num ${net>0.5?"pos":net<-0.5?"neg":""}">${net>0.5?"+":""}${fmtTWD(net)}</td></tr>`}).join("")||`<tr><td colspan="4" class="hint">還沒有成員</td></tr>`}</tbody>`;
-  const cred=[],debt=[];
-  Object.entries(bal).forEach(([n,b])=>{const v=b.paid-b.share;if(v>0.5)cred.push([n,v]);else if(v<-0.5)debt.push([n,-v])});
-  cred.sort((a,b)=>b[1]-a[1]);debt.sort((a,b)=>b[1]-a[1]);
-  const out=[];let i=0,j=0;
-  while(i<debt.length&&j<cred.length){const x=Math.min(debt[i][1],cred[j][1]);out.push(`<div><b>${esc(debt[i][0])}</b> 給 <b>${esc(cred[j][0])}</b> <span class="num">${fmtTWD(x)}</span>（約 ${fmtVND(x*rate())}）</div>`);debt[i][1]-=x;cred[j][1]-=x;if(debt[i][1]<0.5)i++;if(cred[j][1]<0.5)j++}
-  $("settle").innerHTML=out.join("")||`<div>目前大家都打平了。</div>`;
-  const list=[...S.expenses].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  $("expList").innerHTML=list.length?list.map(e=>`<div class="exp">
-    <div style="min-width:0"><div class="ti">${esc(e.title)}</div><div class="sub">${e.day==="pre"?"出發前":esc(DAYNAME(e.day))} · ${esc(e.payer)} 先付</div></div>
-    <div class="amt">${e.currency==="TWD"?fmtTWD(e.amount):fmtVND(e.amount)}<small>${e.currency==="TWD"?"≈ "+fmtVND(e.amount*rate()):"≈ "+fmtTWD(toTWD(e))}</small></div>
-    <button class="icon-btn" type="button" data-del-exp="${esc(e._id)}" aria-label="刪除">✕</button></div>`).join(""):`<div class="empty" style="padding-block:12px">還沒有帳</div>`;
+  $("balTable").innerHTML=`<thead><tr><th>成員</th><th class="r">已付</th><th class="r">要支付的</th><th class="r">差額</th></tr></thead><tbody>${names.map(n=>{const b=bal[n],v=b.paid-b.share;
+    return `<tr><td>${esc(n)}${m.includes(n)?"":" <span class='hint'>(已移除)</span>"}</td><td class="r num">${fmtTWD(b.paid)}</td><td class="r num">${fmtTWD(b.spent)}</td><td class="r num ${v>0.5?"pos":v<-0.5?"neg":""}">${v>0.5?"+":""}${fmtTWD(v)}</td></tr>`}).join("")||`<tr><td colspan="4" class="hint">還沒有成員</td></tr>`}</tbody>`;
+  $("settle").innerHTML=plan.length?plan.map(([f,t,x])=>`<div class="st ${who&&(f===who||t===who)?"me":""}"><span><b>${esc(f)}</b> 給 <b>${esc(t)}</b></span><span class="num">${fmtTWD(x)}<small>約 ${fmtVND(x*rate())}</small></span><button type="button" class="act" data-repay="${esc(f)}|${esc(t)}|${x.toFixed(2)}">已還</button></div>`).join(""):`<div>目前大家都打平了 🎉</div>`;
+  $("expFilters").innerHTML=who?[["all","全部"],["me","跟我有關"]].map(([k,l])=>`<button class="chip" type="button" data-ef="${k}" aria-pressed="${k===expFilter}">${l}</button>`).join(""):"";
+  const list=S.expenses.filter(e=>expFilter!=="me"||!who||e.payer===who||splitOf(e).includes(who));
+  const order=["pre",...DAYS.map(d=>d.id)],groups={};list.forEach(e=>{const d=order.includes(e.day)?e.day:"其他";(groups[d]=groups[d]||[]).push(e)});
+  const keys=[...order,"其他"].filter(k=>groups[k]).reverse();
+  $("expList").innerHTML=keys.length?keys.map(k=>{const g=groups[k].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)),sub=g.filter(e=>e.type!=="repay").reduce((a,e)=>a+toTWD(e),0);
+    return `<div class="exp-day"><span>${esc(k==="其他"?"其他":dayLabel(k))}</span><span class="num">${fmtTWD(sub)}</span></div>`+g.map(e=>{
+      if(e.type==="repay")return `<div class="exp repay"><div style="min-width:0"><div class="ti">💸 ${esc(e.payer)} 還給 ${esc(splitOf(e)[0])}</div></div><div class="amt">${fmtAmt(e)}</div><button type="button" class="icon-btn" data-del-exp="${esc(e._id)}">撤銷</button></div>`;
+      const sp=splitOf(e),mine=who&&sp.includes(who)?toTWD(e)/sp.length:0;
+      return `<button type="button" class="exp" data-edit-exp="${esc(e._id)}"><div style="min-width:0"><div class="ti">${esc(e.title||"其他")}</div><div class="sub">${esc(e.payer)} 付 · ${esc(splitText(e))}${mine?`<span class="mine-part">你 ${fmtTWD(mine)}</span>`:""}</div></div>
+      <div class="amt">${fmtAmt(e)}<small>${altAmt(e)}</small></div></button>`}).join("")}).join(""):`<div class="empty" style="padding-block:12px">${expFilter==="me"?"沒有跟你有關的帳":"還沒有帳"}</div>`;
 }
 
 /* ---------- packing ---------- */
@@ -1861,7 +1944,6 @@ function showTab(t){document.querySelectorAll("nav.tabs [data-tab]").forEach(x=>
   if(matchMedia("(max-width:640px)").matches&&showTab._init)document.querySelector("main").scrollIntoView();showTab._init=true;try{localStorage.setItem("sgn-tab",t)}catch(_){}}
 document.querySelector("nav.tabs").addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(b)showTab(b.dataset.tab)});
 $("openSettings").onclick=()=>{$("settings").hidden=!$("settings").hidden};
-$("ePayer").addEventListener("change",e=>e.target.dataset.touched="1");
 
 $("trIn").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey&&!e.isComposing){e.preventDefault();doTranslate()}});
 $("bigShow").addEventListener("click",e=>{if(e.target.id!=="bsPlay")$("bigShow").hidden=true});
@@ -1900,15 +1982,24 @@ document.addEventListener("click",async e=>{
   if(d.focusWish){focusWish(d.focusWish);return}
   if(t.id==="placeCancel"){stopPlacing();return}
   if(t.id==="askFill"){askFill();return}
-  if(d.cur){eCur=d.cur;document.querySelectorAll(".cur-toggle button").forEach(b=>b.setAttribute("aria-checked",b.dataset.cur===eCur));updConv();return}
-  if(d.tag){$("eTitle").value=d.tag;document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed",b===t));$("eTitle").focus();return}
+  if(d.cur){setCur(d.cur);updConv();return}
+  if(d.payer){ePayer=d.payer;renderWhoChips();updConv();return}
+  if(d.split){const n=d.split;if(n==="*")eSplit=null;else{const cur=eSplit?[...eSplit]:[];const i=cur.indexOf(n);i>=0?cur.splice(i,1):cur.push(n);
+      eSplit=!cur.length||S.meta.members.every(x=>cur.includes(x))?null:cur}renderWhoChips();updConv();return}
+  if(d.editExp){startEdit("group",d.editExp);return}
+  if(d.editMine){startEdit("mine",d.editMine);return}
+  if(d.ef){expFilter=d.ef;renderMoney();return}
+  if(d.repay){const [f,to,x]=d.repay.split("|");t.disabled=true;await markRepaid(f,to,Number(x));return}
+  if(t.id==="eCancel"){resetExpForm();return}
+  if(t.id==="eDelete"){await deleteEditing();return}
+  if(d.tag){$("eTitle").value=d.tag;document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed",b===t));return}
   if(d.schedOpen){schedWish=schedWish===d.schedOpen?"":d.schedOpen;editingWish="";renderWish();return}
   if(d.editWish!==undefined){schedWish="";editingWish=editingWish===d.editWish?"":d.editWish;renderWish();if(editingWish){const x=$("ew-n-"+editingWish);if(x)x.focus()}return}
   if(d.copy){try{await navigator.clipboard.writeText(d.copy);toast("已複製")}catch(_){toast("複製失敗，請長按文字複製")}return}
   if(d.rm){const n=d.rm;await write(()=>db.doc("trip/meta").update({members:S.meta.members.filter(x=>x!==n)}),`已移除 ${n}`);return}
   if(d.delItem){await write(()=>db.doc("items/"+d.delItem).delete(),"已刪除");return}
   if(d.delWish){await write(()=>db.doc("wishes/"+d.delWish).delete(),"已刪除");return}
-  if(d.delExp){await write(()=>db.doc("expenses/"+d.delExp).delete(),"已刪除這筆帳");return}
+  if(d.delExp){await write(()=>db.doc("expenses/"+d.delExp).delete(),"已撤銷");return}
   if(d.delPack){await write(()=>db.doc("packing/"+d.delPack).delete(),"已刪除");return}
   if(d.vote){const who=me();if(!who){toast("先在上方選你是誰");return}
     const w=S.wishes.find(x=>x._id===d.vote);if(!w)return;const v=new Set(w.votes||[]);v.has(who)?v.delete(who):v.add(who);
@@ -1938,14 +2029,7 @@ document.addEventListener("submit",async e=>{
     const doc={title:$("wName").value.trim(),kind:$("wKind").value,area:$("wArea").value.trim(),link,note:$("wNote").value.trim(),votes:who?[who]:[],addedBy:who||"",createdAt:Date.now()};
     if(ll){doc.lat=ll[0];doc.lng=ll[1];if(ll[2])doc.approx=true}
     const ok=await write(()=>db.collection("wishes").add(doc),ll?"已加入，也標在地圖上了":"已加入想去清單");if(ok){f.reset();askLL=null;$("askStatus").hidden=true}return}
-  if(f.id==="expForm"){
-    if(moneyMode==="mine"){const amt=Number($("eAmt").value);if(!(amt>0)){toast("金額要大於 0");return}if(!meName){toast("先選你是誰");return}
-      const ok=await write(()=>db.collection("mine/"+keyOf(meName)+"/entries").add({title:$("eTitle").value.trim(),amount:amt,currency:eCur,day:$("eDay").value,createdAt:Date.now()}),"記到你的帳了");
-      if(ok){$("eTitle").value="";$("eAmt").value="";document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed","false"));updConv()}return}
-    if(!$("ePayer").value){toast("先在設定加入成員");return}
-    const amt=Number($("eAmt").value);if(!(amt>0)){toast("金額要大於 0");return}
-    const ok=await write(()=>db.collection("expenses").add({title:$("eTitle").value.trim(),amount:amt,currency:eCur,day:$("eDay").value,payer:$("ePayer").value,createdAt:Date.now()}),"記好了");
-    if(ok){$("eTitle").value="";$("eAmt").value="";document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed","false"));updConv()}return}
+  if(f.id==="expForm"){await saveExpense();return}
   if(f.id==="packForm"){const ok=await write(()=>db.collection("packing").add({text:$("pText").value.trim(),group:$("pGroup").value,doneBy:[],createdAt:Date.now()}),"已加入");if(ok)$("pText").value="";return}
   if(f.id==="memberForm"){const n=$("memberName").value.trim();if(!n)return;if(S.meta.members.includes(n)){toast("已經有這個人了");return}
     const ok=await write(()=>db.doc("trip/meta").update({members:[...S.meta.members,n]}),`歡迎 ${n}`);if(ok)$("memberName").value="";return}
