@@ -1247,8 +1247,8 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
         <div class="qp-conv hint" id="eConv">輸入金額</div>
         <div class="qp-tags" id="eTags"></div>
         <input id="eTitle" placeholder="項目（可不填）" maxlength="60" aria-label="項目">
-        <div class="qp-field grp-only"><div class="qp-lbl">誰付錢</div><div class="who-chips" id="ePayerChips"></div></div>
-        <div class="qp-field grp-only"><div class="qp-lbl">分給誰 <span id="eSplitHint"></span></div><div class="who-chips split" id="eSplitChips"></div></div>
+        <div class="qp-field grp-only"><div class="qp-lbl">誰先付錢？</div><div class="who-chips" id="ePayerChips"></div></div>
+        <div class="qp-field grp-only"><div class="qp-lbl">幫誰付的？ <span id="eSplitHint"></span></div><div class="who-chips split" id="eSplitChips"></div></div>
         <div class="qp-row"><label for="eDay">哪一天</label><select id="eDay"></select></div>
         <div class="qp-btns"><button class="btn qp-go" type="submit" id="eGo">記一筆</button><button type="button" class="act" id="eCancel" hidden>取消</button></div>
         <button type="button" class="act danger" id="eDelete" hidden>刪除這筆</button>
@@ -1818,7 +1818,7 @@ const altAmt=e=>e.currency==="TWD"?"≈ "+fmtVND(e.amount*(Number(e.rate)||rate(
 function toTWD(e){return e.currency==="TWD"?Number(e.amount):Number(e.amount)/(Number(e.rate)||rate())}
 function splitOf(e){return Array.isArray(e.split)&&e.split.length?e.split:S.meta.members}
 function splitText(e){const sp=splitOf(e),all=!Array.isArray(e.split)||!e.split.length;
-  if(all)return"全員平分";if(sp.length===1)return sp[0]===e.payer?"只算自己":"分給 "+sp[0];return"分給 "+sp.join("、")}
+  if(all)return e.payer+" 幫所有人付";if(sp.length===1&&sp[0]===e.payer)return e.payer+" 自己的";return sp.includes(e.payer)?e.payer+" 付，"+sp.join("、")+" 平分":e.payer+" 幫 "+sp.join("、")+" 付"}
 function balances(){const bal={},add=n=>bal[n]||(bal[n]={paid:0,share:0,spent:0});S.meta.members.forEach(add);
   S.expenses.forEach(e=>{const t=toTWD(e),sp=splitOf(e);if(!e.payer||!sp.length)return;add(e.payer).paid+=t;
     sp.forEach(n=>{add(n).share+=t/sp.length;if(e.type!=="repay")bal[n].spent+=t/sp.length})});
@@ -1832,12 +1832,12 @@ function renderWhoChips(){const m=S.meta.members;
   if(!ePayer||!m.includes(ePayer))ePayer=m.includes(me())?me():(m[0]||"");
   if(eSplit)eSplit=eSplit.filter(n=>m.includes(n));if(eSplit&&!eSplit.length)eSplit=null;
   $("ePayerChips").innerHTML=m.map(n=>`<button type="button" class="wc" data-payer="${esc(n)}" aria-pressed="${n===ePayer}">${esc(n)}</button>`).join("");
-  $("eSplitChips").innerHTML=`<button type="button" class="wc" data-split="*" aria-pressed="${!eSplit}">全員</button>`+m.map(n=>`<button type="button" class="wc" data-split="${esc(n)}" aria-pressed="${!!eSplit&&eSplit.includes(n)}">${esc(n)}</button>`).join("")}
+  $("eSplitChips").innerHTML=`<button type="button" class="wc" data-split="*" aria-pressed="${!eSplit}">所有人</button>`+m.map(n=>`<button type="button" class="wc" data-split="${esc(n)}" aria-pressed="${!!eSplit&&eSplit.includes(n)}">${esc(n)}</button>`).join("")}
 function updConv(){const a=Number($("eAmt").value)||0,r=(eEdit&&eEdit.rate)||rate(),tw=eCur==="VND"?a/r:a;
   let s=a?(eCur==="VND"?"≈ "+fmtTWD(tw):"≈ "+fmtVND(a*r)):"輸入金額";
   if(moneyMode==="group"){const sp=eSplit||S.meta.members,n=Math.max(1,sp.length);
-    $("eSplitHint").textContent=!eSplit?`全員 ${n} 人平分`:n===1?(sp[0]===ePayer?`只算 ${sp[0]} 自己，不影響分帳`:`這筆全算 ${sp[0]} 的`):`${n} 人平分`;
-    if(a)s+=" · "+(n===1?sp[0]+" "+fmtTWD(tw):"每人 "+fmtTWD(tw/n))}
+    $("eSplitHint").textContent=!eSplit?`${n} 人平分`:n===1&&sp[0]===ePayer?"自己的，不用分":"只有點到的人要分";
+    if(a){const owe=sp.filter(x=>x!==ePayer);s+=" · "+(!eSplit?"每人 "+fmtTWD(tw/n):n===1&&sp[0]===ePayer?"不用分":owe.length?owe.join("、")+" 各還 "+ePayer+" "+fmtTWD(tw/n):"")}}
   $("eConv").textContent=s;
   $("eGo").textContent=eEdit?"儲存修改":moneyMode==="group"?"記一筆":"記到我的帳"}
 $("eAmt").addEventListener("input",updConv);
@@ -1912,7 +1912,7 @@ function renderMoney(){
     return `<div class="exp-day"><span>${esc(k==="其他"?"其他":dayLabel(k))}</span><span class="num">${fmtTWD(sub)}</span></div>`+g.map(e=>{
       if(e.type==="repay")return `<div class="exp repay"><div style="min-width:0"><div class="ti">💸 ${esc(e.payer)} 還給 ${esc(splitOf(e)[0])}</div></div><div class="amt">${fmtAmt(e)}</div><button type="button" class="icon-btn" data-del-exp="${esc(e._id)}">撤銷</button></div>`;
       const sp=splitOf(e),mine=who&&sp.includes(who)?toTWD(e)/sp.length:0;
-      return `<button type="button" class="exp" data-edit-exp="${esc(e._id)}"><div style="min-width:0"><div class="ti">${esc(e.title||"其他")}</div><div class="sub">${esc(e.payer)} 付 · ${esc(splitText(e))}${mine?`<span class="mine-part">你 ${fmtTWD(mine)}</span>`:""}</div></div>
+      return `<button type="button" class="exp" data-edit-exp="${esc(e._id)}"><div style="min-width:0"><div class="ti">${esc(e.title||"其他")}</div><div class="sub">${esc(splitText(e))}${mine?`<span class="mine-part">你 ${fmtTWD(mine)}</span>`:""}</div></div>
       <div class="amt">${fmtAmt(e)}<small>${altAmt(e)}</small></div></button>`}).join("")}).join(""):`<div class="empty" style="padding-block:12px">${expFilter==="me"?"沒有跟你有關的帳":"還沒有帳"}</div>`;
 }
 
