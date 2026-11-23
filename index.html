@@ -1087,11 +1087,11 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
 .members span{display:flex;gap:4px;align-items:center;background:var(--bg);border-radius:999px;padding:2px 4px 2px 12px;font-size:14px}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:14px;z-index:10}
 @media (max-width:640px){
-  .wrap{padding-block:12px calc(96px + env(safe-area-inset-bottom,0px))}
-  nav.tabs{position:fixed;top:auto;bottom:0;left:0;right:0;margin:0;border-bottom:0;border-top:2px solid var(--ink);padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));gap:2px}
+  .wrap{padding-block:12px calc(32px + env(safe-area-inset-bottom,0px))}
+  nav.tabs{position:sticky;top:0;padding:calc(6px + env(safe-area-inset-top,0px)) 0 6px;margin-bottom:16px;gap:2px;overflow:visible}
   nav.tabs button{flex:1 1 0;padding:10px 0;font-size:14px;min-width:0}
   nav.tabs .n{display:block;margin:0;font-size:10px;line-height:1}
-  .toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+  .toast{bottom:calc(24px + env(safe-area-inset-bottom,0px))}
   input,select,textarea,form.row input,form.row select{font-size:16px}
   form.row .grow{flex-basis:100%}
   .icon-btn{padding:8px}
@@ -1899,8 +1899,7 @@ function renderMoney(){
   const myPlan=who?plan.filter(([f,t])=>f===who||t===who):[];
   $("moneySum").innerHTML=`<div class="mine-card"><div class="lbl hint">${who?esc(who)+" 要支付的":"我要支付的"}</div><div class="v">${mb?fmtTWD(mb.spent):"—"}</div>
       ${mb?`<div class="sub">${mb.paid>0.5?"已經先付 "+fmtTWD(mb.paid-(mb.share-mb.spent))+"，":""}${net>0.5?"會收回 "+fmtTWD(net):net<-0.5?"還要給 "+myPlan.filter(p=>p[0]===who).map(p=>esc(p[1])+" "+fmtTWD(p[2])).join("、"):"已經打平"}</div>`:""}</div>
-    <div><div class="lbl hint">總花費</div><div class="v">${fmtTWD(total)}</div></div>
-    <div><div class="lbl hint">平均每人</div><div class="v">${m.length?fmtTWD(total/m.length):"—"}</div></div>`;
+    <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline"><div class="lbl hint">大家總花費</div><div class="v">${fmtTWD(total)}</div></div>`;
   $("balTable").innerHTML=`<thead><tr><th>成員</th><th class="r">已付</th><th class="r">要支付的</th><th class="r">差額</th></tr></thead><tbody>${names.map(n=>{const b=bal[n],v=b.paid-b.share;
     return `<tr><td>${esc(n)}${m.includes(n)?"":" <span class='hint'>(已移除)</span>"}</td><td class="r num">${fmtTWD(b.paid)}</td><td class="r num">${fmtTWD(b.spent)}</td><td class="r num ${v>0.5?"pos":v<-0.5?"neg":""}">${v>0.5?"+":""}${fmtTWD(v)}</td></tr>`}).join("")||`<tr><td colspan="4" class="hint">還沒有成員</td></tr>`}</tbody>`;
   $("settle").innerHTML=plan.length?plan.map(([f,t,x])=>`<div class="st ${who&&(f===who||t===who)?"me":""}"><span><b>${esc(f)}</b> 給 <b>${esc(t)}</b></span><span class="num">${fmtTWD(x)}<small>約 ${fmtVND(x*rate())}</small></span><button type="button" class="act" data-repay="${esc(f)}|${esc(t)}|${x.toFixed(2)}">已還</button></div>`).join(""):`<div>目前大家都打平了 🎉</div>`;
