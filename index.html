@@ -924,6 +924,11 @@ tr:last-child td{border-bottom:0}
 .bal-details{background:var(--surface);margin-bottom:4px}
 .bal-details>summary{cursor:pointer;padding:10px 14px;font-size:14px;font-weight:700;color:var(--muted)}
 .bal-details .table-wrap{margin:0}
+.settle-box{margin-top:16px}
+.settle-box .settle{padding:0 10px 10px;margin:0}
+.settle-box summary .hint{margin-left:8px;font-weight:500}
+.split-all{border:0;background:none;color:var(--muted);font-size:13px;text-decoration:underline;cursor:pointer;padding:0 4px;margin-left:auto}
+.qp-lbl{display:flex;align-items:baseline;gap:4px;flex-wrap:wrap}
 .who-chips{display:flex;flex-wrap:wrap;gap:6px}
 .wc{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:7px 14px;font-size:15px;cursor:pointer;color:var(--ink);min-height:38px}
 #ePayerChips .wc[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -1248,7 +1253,7 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
         <div class="qp-tags" id="eTags"></div>
         <input id="eTitle" placeholder="項目（可不填）" maxlength="60" aria-label="項目">
         <div class="qp-field grp-only"><div class="qp-lbl">誰先付錢？</div><div class="who-chips" id="ePayerChips"></div></div>
-        <div class="qp-field grp-only"><div class="qp-lbl">幫誰付的？ <span id="eSplitHint"></span></div><div class="who-chips split" id="eSplitChips"></div></div>
+        <div class="qp-field grp-only"><div class="qp-lbl">誰有份？ <span id="eSplitHint"></span><button type="button" class="split-all" id="eSplitAll"></button></div><div class="who-chips split" id="eSplitChips"></div></div>
         <div class="qp-row"><label for="eDay">哪一天</label><select id="eDay"></select></div>
         <div class="qp-btns"><button class="btn qp-go" type="submit" id="eGo">記一筆</button><button type="button" class="act" id="eCancel" hidden>取消</button></div>
         <button type="button" class="act danger" id="eDelete" hidden>刪除這筆</button>
@@ -1260,13 +1265,15 @@ a.act{text-decoration:none;color:var(--ink);display:inline-block}
         <div class="exp-list" id="mineList"></div>
       </div>
       <div id="groupView">
-      <div class="sum" id="moneySum" style="margin-top:16px"></div>
-      <div class="sec-head" style="margin-top:20px"><h2 style="font-size:18px">怎麼還</h2><span class="hint">還完按「已還」就會歸零</span></div>
-      <div class="settle" id="settle"></div>
-      <details class="bal-details"><summary>每個人明細</summary><div class="table-wrap"><table id="balTable"></table></div></details>
       <div class="sec-head" style="margin-top:20px"><h2 style="font-size:18px">紀錄</h2><span class="hint">點一筆可以修改</span></div>
       <div class="filters" id="expFilters"></div>
       <div class="exp-list" id="expList"></div>
+      <div class="sec-head" style="margin-top:24px"><h2 style="font-size:18px">明細</h2></div>
+      <div class="sum" id="moneySum"></div>
+      <div class="table-wrap" style="margin-top:8px"><table id="balTable"></table></div>
+      <details class="bal-details settle-box"><summary>怎麼還（建議）<span class="hint" id="settleCount"></span></summary>
+        <p class="hint" style="margin:0 14px 8px">用最少次轉帳打平的建議。還完按「已還」，那條就會消失。</p>
+        <div class="settle" id="settle"></div></details>
       </div>
     </section>
 
@@ -1830,19 +1837,23 @@ function settlePlan(bal){const cred=[],debt=[];
   return out}
 function renderWhoChips(){const m=S.meta.members;
   if(!ePayer||!m.includes(ePayer))ePayer=m.includes(me())?me():(m[0]||"");
-  if(eSplit)eSplit=eSplit.filter(n=>m.includes(n));if(eSplit&&!eSplit.length)eSplit=null;
+  if(eSplit)eSplit=eSplit.filter(n=>m.includes(n));
   $("ePayerChips").innerHTML=m.map(n=>`<button type="button" class="wc" data-payer="${esc(n)}" aria-pressed="${n===ePayer}">${esc(n)}</button>`).join("");
-  $("eSplitChips").innerHTML=`<button type="button" class="wc" data-split="*" aria-pressed="${!eSplit}">所有人</button>`+m.map(n=>`<button type="button" class="wc" data-split="${esc(n)}" aria-pressed="${!!eSplit&&eSplit.includes(n)}">${esc(n)}</button>`).join("")}
+  $("eSplitChips").innerHTML=m.map(n=>`<button type="button" class="wc" data-split="${esc(n)}" aria-pressed="${!eSplit||eSplit.includes(n)}">${esc(n)}</button>`).join("");
+  $("eSplitAll").textContent=eSplit?"全選":"清空";$("eSplitAll").dataset.split=eSplit?"*":"0"}
 function updConv(){const a=Number($("eAmt").value)||0,r=(eEdit&&eEdit.rate)||rate(),tw=eCur==="VND"?a/r:a;
   let s=a?(eCur==="VND"?"≈ "+fmtTWD(tw):"≈ "+fmtVND(a*r)):"輸入金額";
-  if(moneyMode==="group"){const sp=eSplit||S.meta.members,n=Math.max(1,sp.length);
-    $("eSplitHint").textContent=!eSplit?`${n} 人平分`:n===1&&sp[0]===ePayer?"自己的，不用分":"只有點到的人要分";
+  if(moneyMode==="group"){const all=S.meta.members,sp=eSplit||all,n=Math.max(1,sp.length),out=all.filter(x=>!sp.includes(x));
+    $("eSplitHint").textContent=!sp.length?"點有份的人":!eSplit?`所有人平分`:sp.length===1&&sp[0]===ePayer?"自己的，不用分":out.length<=2?`${sp.length} 人平分，${out.join("、")} 沒份`:`只有 ${sp.join("、")}`;
+    if(!sp.length){$("eConv").textContent=a?(eCur==="VND"?"≈ "+fmtTWD(tw):"≈ "+fmtVND(a*r)):"輸入金額";$("eGo").textContent=eEdit?"儲存修改":"記一筆";return}
     if(a){const owe=sp.filter(x=>x!==ePayer);s+=" · "+(!eSplit?"每人 "+fmtTWD(tw/n):n===1&&sp[0]===ePayer?"不用分":owe.length?owe.join("、")+" 各還 "+ePayer+" "+fmtTWD(tw/n):"")}}
   $("eConv").textContent=s;
   $("eGo").textContent=eEdit?"儲存修改":moneyMode==="group"?"記一筆":"記到我的帳"}
 $("eAmt").addEventListener("input",updConv);
 $("eDay").addEventListener("change",e=>e.target.dataset.touched="1");
-function setCur(c){eCur=c;document.querySelectorAll(".cur-toggle button").forEach(b=>b.setAttribute("aria-checked",b.dataset.cur===c))}
+try{const c=localStorage.getItem("vt-cur");if(c==="TWD"||c==="VND")eCur=c}catch(_){}
+function setCur(c,keep){eCur=c;if(keep)try{localStorage.setItem("vt-cur",c)}catch(_){}document.querySelectorAll(".cur-toggle button").forEach(b=>b.setAttribute("aria-checked",b.dataset.cur===c))}
+setCur(eCur);
 function resetExpForm(){eEdit=null;eSplit=null;delArm=0;$("eAmt").value="";$("eTitle").value="";
   document.querySelectorAll("#eTags button").forEach(b=>b.setAttribute("aria-pressed","false"));
   $("eEditing").hidden=true;$("eCancel").hidden=true;$("eDelete").hidden=true;$("eDelete").textContent="刪除這筆";$("expForm").classList.remove("editing");
@@ -1864,6 +1875,7 @@ async function saveExpense(){
     const col="mine/"+keyOf(meName)+"/entries",data={title,amount:amt,currency:eCur,day,rate:r};
     ok=await write(()=>eEdit?db.doc(col+"/"+eEdit.id).update(data):db.collection(col).add({...data,createdAt:Date.now()}),eEdit?"已修改":"記到你的帳了")}
   else{if(!ePayer){toast("先在設定加入成員");return}
+    if(eSplit&&!eSplit.length){toast("至少點一個有份的人");return}
     const data={title,amount:amt,currency:eCur,day,payer:ePayer,split:eSplit?[...eSplit]:null,rate:r};
     ok=await write(()=>eEdit?db.doc("expenses/"+eEdit.id).update(data):db.collection("expenses").add({...data,by:me()||"",createdAt:Date.now()}),eEdit?"已修改":"記好了")}
   if(ok)resetExpForm()}
@@ -1901,7 +1913,8 @@ function renderMoney(){
       ${mb?`<div class="sub">${mb.paid>0.5?"已經先付 "+fmtTWD(mb.paid-(mb.share-mb.spent))+"，":""}${net>0.5?"會收回 "+fmtTWD(net):net<-0.5?"還要給 "+myPlan.filter(p=>p[0]===who).map(p=>esc(p[1])+" "+fmtTWD(p[2])).join("、"):"已經打平"}</div>`:""}</div>
     <div style="grid-column:1/-1;display:flex;justify-content:space-between;align-items:baseline"><div class="lbl hint">大家總花費</div><div class="v">${fmtTWD(total)}</div></div>`;
   $("balTable").innerHTML=`<thead><tr><th>成員</th><th class="r">已付</th><th class="r">要支付的</th><th class="r">差額</th></tr></thead><tbody>${names.map(n=>{const b=bal[n],v=b.paid-b.share;
-    return `<tr><td>${esc(n)}${m.includes(n)?"":" <span class='hint'>(已移除)</span>"}</td><td class="r num">${fmtTWD(b.paid)}</td><td class="r num">${fmtTWD(b.spent)}</td><td class="r num ${v>0.5?"pos":v<-0.5?"neg":""}">${v>0.5?"+":""}${fmtTWD(v)}</td></tr>`}).join("")||`<tr><td colspan="4" class="hint">還沒有成員</td></tr>`}</tbody>`;
+    return `<tr><td>${esc(n)}${m.includes(n)?"":" <span class='hint'>(已移除)</span>"}</td><td class="r num">${fmtTWD(b.paid)}</td><td class="r num">${fmtTWD(b.spent)}</td><td class="r num ${v>0.5?"pos":v<-0.5?"neg":""}">${v>0.5?"+":v<-0.5?"−":""}${fmtTWD(Math.abs(v))}</td></tr>`}).join("")||`<tr><td colspan="4" class="hint">還沒有成員</td></tr>`}</tbody>`;
+  $("settleCount").textContent=plan.length?plan.length+" 筆":"大家都打平了";
   $("settle").innerHTML=plan.length?plan.map(([f,t,x])=>`<div class="st ${who&&(f===who||t===who)?"me":""}"><span><b>${esc(f)}</b> 給 <b>${esc(t)}</b></span><span class="num">${fmtTWD(x)}<small>約 ${fmtVND(x*rate())}</small></span><button type="button" class="act" data-repay="${esc(f)}|${esc(t)}|${x.toFixed(2)}">已還</button></div>`).join(""):`<div>目前大家都打平了 🎉</div>`;
   $("expFilters").innerHTML=who?[["all","全部"],["me","跟我有關"]].map(([k,l])=>`<button class="chip" type="button" data-ef="${k}" aria-pressed="${k===expFilter}">${l}</button>`).join(""):"";
   const list=S.expenses.filter(e=>expFilter!=="me"||!who||e.payer===who||splitOf(e).includes(who));
@@ -1981,10 +1994,10 @@ document.addEventListener("click",async e=>{
   if(d.focusWish){focusWish(d.focusWish);return}
   if(t.id==="placeCancel"){stopPlacing();return}
   if(t.id==="askFill"){askFill();return}
-  if(d.cur){setCur(d.cur);updConv();return}
+  if(d.cur){setCur(d.cur,true);updConv();return}
   if(d.payer){ePayer=d.payer;renderWhoChips();updConv();return}
-  if(d.split){const n=d.split;if(n==="*")eSplit=null;else{const cur=eSplit?[...eSplit]:[];const i=cur.indexOf(n);i>=0?cur.splice(i,1):cur.push(n);
-      eSplit=!cur.length||S.meta.members.every(x=>cur.includes(x))?null:cur}renderWhoChips();updConv();return}
+  if(d.split){const n=d.split;if(n==="*")eSplit=null;else if(n==="0")eSplit=[];else{const cur=eSplit?[...eSplit]:[...S.meta.members];const i=cur.indexOf(n);i>=0?cur.splice(i,1):cur.push(n);
+      eSplit=S.meta.members.every(x=>cur.includes(x))?null:cur}renderWhoChips();updConv();return}
   if(d.editExp){startEdit("group",d.editExp);return}
   if(d.editMine){startEdit("mine",d.editMine);return}
   if(d.ef){expFilter=d.ef;renderMoney();return}
